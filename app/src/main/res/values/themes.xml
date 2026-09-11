@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.WeSynced" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- You can customize colors here later -->
+    </style>
+</resources>
