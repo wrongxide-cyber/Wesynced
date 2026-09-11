@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "15593425866",
+    "firebase_url": "https://wesynced-default-rtdb.firebaseio.com",
+    "project_id": "wesynced",
+    "storage_bucket": "wesynced.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:15593425866:android:ac690a572f29eb89119d33",
+        "android_client_info": {
+          "package_name": "Com.wesynced.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrLWfonQIx2Nl5ujx7hUvjHNn94AsFfcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
