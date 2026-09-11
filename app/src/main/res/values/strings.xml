@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WeSynced</string>
     <string name="widget_name">WeSynced Widget</string>
@@ -11,4 +12,6 @@
     <string name="hint_tap_to_change">Tap to change</string>
     <string name="partner_mood_title">Partner\'s Mood</string>
     <string name="choose_mood_title">Choose a Mood</string>
+    <string name="error_enter_pairing_id">Please enter a pairing ID</string>
+    <string name="widget_description">Shows your partner\'s live mood</string>
 </resources>
