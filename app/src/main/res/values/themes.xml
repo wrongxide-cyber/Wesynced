@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.WeSynced" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- You can customize colors here later -->
+    <style name="Theme.WeSynced" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pastel_purple</item>
     </style>
 </resources>
