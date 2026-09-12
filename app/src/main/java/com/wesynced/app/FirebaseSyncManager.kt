@@ -101,17 +101,9 @@ object FirebaseSyncManager {
         }
 
         pairRef.addValueEventListener(currentPairListener!!)
-
-        // Register automatic disconnect handling: if this device loses connection
-        // for any reason (app closed, crash, network loss), Firebase will
-        // automatically mark this device's mood as "offline" for the partner to see.
-        val myNode = database.getReference("pairs").child(cleanId).child("members").child(myDeviceId)
-        myNode.onDisconnect().updateChildren(
-            mapOf(
-                "mood" to DISCONNECT_EMOJI,
-                "timestamp" to ServerValue.TIMESTAMP
-            )
-        )
+        // Note: no onDisconnect() auto-trigger registered here on purpose.
+        // Closing/backgrounding the app must NOT change the partner's view of your mood.
+        // Only disconnectManually() (Disconnect button) sets the offline status.
     }
 
     /**
@@ -148,11 +140,26 @@ object FirebaseSyncManager {
     }
 
     /**
-     * Removes active database listeners on disconnect, and immediately marks
-     * this device's mood as "offline" so the partner sees it right away
-     * (rather than waiting for Firebase's automatic onDisconnect trigger).
+     * Removes active database listeners only — does NOT change the mood status.
+     * Used when the app is backgrounded, closed, rotated, or destroyed.
+     * The partner will continue to see whatever mood was last set.
      */
     fun disconnect() {
+        if (pairsRef != null && currentPairListener != null) {
+            pairsRef?.removeEventListener(currentPairListener!!)
+            pairsRef = null
+            currentPairListener = null
+        }
+        activePairingId = null
+        onFriendMoodChangedCallback = null
+    }
+
+    /**
+     * Called only when the user explicitly taps the Disconnect button.
+     * Sets the offline emoji so the partner knows this device disconnected on purpose,
+     * then cleans up listeners the same way disconnect() does.
+     */
+    fun disconnectManually() {
         val pairingId = activePairingId
         if (pairingId != null) {
             val myNode = database.getReference("pairs").child(pairingId).child("members").child(myDeviceId)
@@ -163,13 +170,6 @@ object FirebaseSyncManager {
                 )
             )
         }
-
-        if (pairsRef != null && currentPairListener != null) {
-            pairsRef?.removeEventListener(currentPairListener!!)
-            pairsRef = null
-            currentPairListener = null
-        }
-        activePairingId = null
-        onFriendMoodChangedCallback = null
+        disconnect()
     }
 }
