@@ -73,14 +73,14 @@ class MainActivity : AppCompatActivity() {
             binding.tilPairingId.error = null
         }
 
-        // Disconnect Button Handler
+        // Disconnect Button Handler — this is the ONLY place that sets the offline status
         binding.btnDisconnect.setOnClickListener {
             handleDisconnect()
         }
     }
 
     private fun handleDisconnect() {
-        FirebaseSyncManager.disconnect()
+        FirebaseSyncManager.disconnectManually()
         currentPairingId = null
 
         binding.cardConnectionBadge.visibility = View.GONE
@@ -222,6 +222,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // Only cleans up listeners — does NOT change mood status.
+        // Closing the app, rotating the screen, or backgrounding will
+        // NOT show your partner as offline; only the Disconnect button does that.
         FirebaseSyncManager.disconnect()
     }
 
