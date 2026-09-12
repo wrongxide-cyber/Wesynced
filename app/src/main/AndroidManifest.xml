@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.wesynced.app">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Network permissions required for Firebase Realtime Database syncing -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".WeSyncedApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,7 +15,6 @@
         android:theme="@style/Theme.WeSynced"
         tools:targetApi="35">
 
-        <!-- Main Activity: UI, mood selector & pairing logic -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -28,7 +26,21 @@
             </intent-filter>
         </activity>
 
-        <!-- Standalone Android Home Screen Widget Receiver -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".HelpActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <receiver
             android:name=".MoodWidgetProvider"
             android:exported="true"
