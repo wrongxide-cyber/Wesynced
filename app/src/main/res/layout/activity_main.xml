@@ -1,525 +1,555 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/pastel_background"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/card_surface"
+            app:navigationIcon="@drawable/ic_menu_hamburger" />
 
-            <!-- App Header: Cute branding -->
-            <LinearLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/pastel_background"
+            tools:context=".MainActivity">
+
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_name"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_tagline"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_secondary" />
-                </LinearLayout>
-
-                <!-- Disconnect Button (shown only when connected) -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDisconnect"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="@string/btn_disconnect"
-                    android:textSize="12sp"
-                    android:textColor="@color/pastel_purple_dark"
-                    tools:visibility="visible" />
-
-                <!-- Active Connection Badge -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardConnectionBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:visibility="gone"
-                    app:cardCornerRadius="14dp"
-                    app:cardBackgroundColor="@color/pastel_mint"
-                    app:strokeWidth="0dp"
-                    tools:visibility="visible">
-
-                    <TextView
-                        android:id="@+id/tvConnectionBadge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingBottom="6dp"
-                        android:text="Synced"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/mint_dark" />
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-
-            <!-- Pairing Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardPairing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/card_surface"
-                app:strokeWidth="0dp">
+                android:layout_height="match_parent"
+                android:fillViewport="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pairing_title"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginBottom="10dp" />
-
+                    <!-- App Header: Cute branding -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilPairingId"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="@string/hint_pairing_id"
-                            app:boxCornerRadiusTopStart="14dp"
-                            app:boxCornerRadiusTopEnd="14dp"
-                            app:boxCornerRadiusBottomStart="14dp"
-                            app:boxCornerRadiusBottomEnd="14dp"
-                            app:boxStrokeColor="@color/pastel_purple">
+                            android:orientation="vertical">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etPairingId"
-                                android:layout_width="match_parent"
+                            <TextView
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:inputType="textCapCharacters"
-                                android:maxLength="16"
-                                android:fontFamily="monospace"
-                                android:textSize="15sp" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:text="@string/app_name"
+                                android:textSize="28sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
 
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/app_tagline"
+                                android:textSize="14sp"
+                                android:textColor="@color/text_secondary" />
+                        </LinearLayout>
+
+                        <!-- Disconnect Button (shown only when connected) -->
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnConnect"
-                            style="@style/Widget.Material3.Button"
+                            android:id="@+id/btnDisconnect"
+                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/btn_connect"
-                            android:backgroundTint="@color/pastel_purple"
-                            android:textColor="@android:color/white"
-                            app:cornerRadius="14dp" />
+                            android:visibility="gone"
+                            android:text="@string/btn_disconnect"
+                            android:textSize="12sp"
+                            android:textColor="@color/pastel_purple_dark"
+                            tools:visibility="visible" />
+
+                        <!-- Active Connection Badge -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardConnectionBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:visibility="gone"
+                            app:cardCornerRadius="14dp"
+                            app:cardBackgroundColor="@color/pastel_mint"
+                            app:strokeWidth="0dp"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:id="@+id/tvConnectionBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingBottom="6dp"
+                                android:text="Synced"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/mint_dark" />
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
 
-                    <!-- Action buttons for ID -->
-                    <LinearLayout
+                    <!-- Pairing Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPairing"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnGenerateId"
-                            style="@style/Widget.Material3.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/btn_generate_random"
-                            android:textSize="12sp"
-                            android:textColor="@color/pastel_purple_dark" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnCopyId"
-                            style="@style/Widget.Material3.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/btn_copy_id"
-                            android:textSize="12sp"
-                            android:textColor="@color/pastel_purple_dark" />
-                    </LinearLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Large Live Mood Preview Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardLivePreviewContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="@color/card_surface"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="24dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/my_current_mood"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- Circular Pastel Glow Container -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        app:cardCornerRadius="60dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/pastel_peach_light"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
                         app:strokeWidth="0dp">
 
-                        <TextView
-                            android:id="@+id/tvLivePreviewEmoji"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="♥️"
-                            android:textSize="64sp" />
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/pairing_title"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginBottom="10dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/tilPairingId"
+                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:hint="@string/hint_pairing_id"
+                                    app:boxCornerRadiusTopStart="14dp"
+                                    app:boxCornerRadiusTopEnd="14dp"
+                                    app:boxCornerRadiusBottomStart="14dp"
+                                    app:boxCornerRadiusBottomEnd="14dp"
+                                    app:boxStrokeColor="@color/pastel_purple">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etPairingId"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="textCapCharacters"
+                                        android:maxLength="16"
+                                        android:fontFamily="monospace"
+                                        android:textSize="15sp" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnConnect"
+                                    style="@style/Widget.Material3.Button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@string/btn_connect"
+                                    android:backgroundTint="@color/pastel_purple"
+                                    android:textColor="@android:color/white"
+                                    app:cornerRadius="14dp" />
+                            </LinearLayout>
+
+                            <!-- Action buttons for ID -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="8dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnGenerateId"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/btn_generate_random"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/pastel_purple_dark" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnCopyId"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/btn_copy_id"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/pastel_purple_dark" />
+                            </LinearLayout>
+
+                        </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:id="@+id/tvLivePreviewLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Safe and Sound"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginTop="12dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/hint_tap_to_change"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginTop="4dp" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Paired Partner Live Mood Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardPartnerStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/pastel_lavender_light"
-                app:strokeWidth="0dp"
-                tools:visibility="visible">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvFriendEmoji"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:gravity="center"
-                        android:text="♥️"
-                        android:textSize="36sp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/partner_mood_title"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
-
-                        <TextView
-                            android:id="@+id/tvFriendStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Safe and Sound"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_secondary" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⚡ Live Sync"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/pastel_purple_dark" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Mood Selection Card: 8 Interactive Buttons -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/card_surface"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/choose_mood_title"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- Row 1: ♥️, 🥺, 🙄, 😞 -->
-                    <LinearLayout
+                    <!-- Large Live Mood Preview Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardLivePreviewContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="4"
-                        android:layout_marginBottom="8dp">
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="3dp"
+                        app:cardBackgroundColor="@color/card_surface"
+                        app:strokeWidth="0dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodHappy"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_peach_soft"
-                            app:strokeWidth="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="24dp">
 
                             <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/my_current_mood"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_secondary"
+                                android:layout_marginBottom="12dp" />
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="120dp"
+                                android:layout_height="120dp"
+                                app:cardCornerRadius="60dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_peach_light"
+                                app:strokeWidth="0dp">
+
+                                <TextView
+                                    android:id="@+id/tvLivePreviewEmoji"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="♥️"
+                                    android:textSize="64sp" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/tvLivePreviewLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Safe and Sound"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginTop="12dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hint_tap_to_change"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary"
+                                android:layout_marginTop="4dp" />
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Paired Partner Live Mood Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPartnerStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/pastel_lavender_light"
+                        app:strokeWidth="0dp"
+                        tools:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/tvFriendEmoji"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:gravity="center"
                                 android:text="♥️"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                                android:textSize="36sp" />
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodSleepy"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_lavender_soft"
-                            app:strokeWidth="0dp">
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="12dp">
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="🥺"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/partner_mood_title"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/text_primary" />
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodPopcorn"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_butter_soft"
-                            app:strokeWidth="0dp">
+                                <TextView
+                                    android:id="@+id/tvFriendStatus"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Safe and Sound"
+                                    android:textSize="13sp"
+                                    android:textColor="@color/text_secondary" />
+                            </LinearLayout>
 
                             <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="🙄"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⚡ Live Sync"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/pastel_purple_dark" />
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodGrumpy"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_rose_soft"
-                            app:strokeWidth="0dp">
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="😞"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-
-                    <!-- Row 2: 🫩, 🫦, 💀, 😕 -->
-                    <LinearLayout
+                    <!-- Mood Selection Card: 8 Interactive Buttons -->
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="4">
+                        android:layout_marginBottom="24dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/card_surface"
+                        app:strokeWidth="0dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodHeart"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_rose_soft"
-                            app:strokeWidth="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
                             <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/choose_mood_title"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"
+                                android:layout_marginBottom="12dp" />
+
+                            <!-- Row 1 -->
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="🫩"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="4"
+                                android:layout_marginBottom="8dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodPartyTada"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_mint_soft"
-                            app:strokeWidth="0dp">
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodHappy"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_peach_soft"
+                                    app:strokeWidth="0dp">
 
-                            <TextView
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="♥️"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodSleepy"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_lavender_soft"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="🥺"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodPopcorn"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_butter_soft"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="🙄"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodGrumpy"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_rose_soft"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="😞"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+                            </LinearLayout>
+
+                            <!-- Row 2 -->
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="🫦"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="4">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodPartyFace"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_butter_soft"
-                            app:strokeWidth="0dp">
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodHeart"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_rose_soft"
+                                    app:strokeWidth="0dp">
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="💀"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="🫩"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnMoodCoffee"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_margin="4dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/pastel_brown_soft"
-                            app:strokeWidth="0dp">
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodPartyTada"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_mint_soft"
+                                    app:strokeWidth="0dp">
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="😕"
-                                android:textSize="32sp" />
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="🫦"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodPartyFace"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_butter_soft"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="💀"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/btnMoodCoffee"
+                                    android:layout_width="0dp"
+                                    android:layout_height="72dp"
+                                    android:layout_weight="1"
+                                    android:layout_margin="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="@color/pastel_brown_soft"
+                                    app:strokeWidth="0dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="😕"
+                                        android:textSize="32sp" />
+                                </com.google.android.material.card.MaterialCardView>
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.core.widget.NestedScrollView>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/card_surface"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/drawer_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
