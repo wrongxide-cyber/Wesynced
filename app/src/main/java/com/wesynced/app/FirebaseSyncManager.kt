@@ -31,6 +31,11 @@ object FirebaseSyncManager {
     private var activePairingId: String? = null
     private var onFriendMoodChangedCallback: ((String, Long) -> Unit)? = null
 
+    // Guards against repeated "connected" notifications and repeated
+    // bounce/UI updates when nothing has actually changed.
+    private var hasNotifiedConnected = false
+    private var lastFriendEmoji: String? = null
+
     /**
      * Initializes Firebase Realtime Database with offline persistence enabled.
      */
@@ -67,16 +72,23 @@ object FirebaseSyncManager {
         val cleanId = pairingId.trim().uppercase()
         activePairingId = cleanId
         onFriendMoodChangedCallback = onFriendMoodChanged
+        hasNotifiedConnected = false
+        lastFriendEmoji = null
 
         val pairRef = database.getReference("pairs").child(cleanId).child("members")
         pairsRef = pairRef
 
         currentPairListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!snapshot.exists()) {
-                    onStatusChanged(true, "Waiting for partner...")
-                    return
+                // Only fire the "connected" callback (and thus the toast + initial
+                // mood push in MainActivity) ONCE per connection — not on every
+                // subsequent data change under this reference.
+                if (!hasNotifiedConnected) {
+                    hasNotifiedConnected = true
+                    onStatusChanged(true, "Connected to pair $cleanId")
                 }
+
+                if (!snapshot.exists()) return
 
                 // Iterate over connected members in this pairing room
                 for (memberSnapshot in snapshot.children) {
@@ -87,11 +99,15 @@ object FirebaseSyncManager {
                         val friendEmoji = memberSnapshot.child("mood").getValue(String::class.java) ?: "♥️"
                         val timestamp = memberSnapshot.child("timestamp").getValue(Long::class.java) ?: System.currentTimeMillis()
 
-                        Log.d(TAG, "Received partner mood update: $friendEmoji at $timestamp")
-                        onFriendMoodChangedCallback?.invoke(friendEmoji, timestamp)
+                        // Only trigger the UI update (and bounce animation) if the
+                        // friend's emoji actually changed since last time.
+                        if (friendEmoji != lastFriendEmoji) {
+                            lastFriendEmoji = friendEmoji
+                            Log.d(TAG, "Received partner mood update: $friendEmoji at $timestamp")
+                            onFriendMoodChangedCallback?.invoke(friendEmoji, timestamp)
+                        }
                     }
                 }
-                onStatusChanged(true, "Connected to pair $cleanId")
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -152,6 +168,8 @@ object FirebaseSyncManager {
         }
         activePairingId = null
         onFriendMoodChangedCallback = null
+        hasNotifiedConnected = false
+        lastFriendEmoji = null
     }
 
     /**
