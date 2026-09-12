@@ -5,17 +5,21 @@ import android.animation.ObjectAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import com.google.android.material.card.MaterialCardView
 import com.wesynced.app.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var drawerToggle: ActionBarDrawerToggle
     private var currentPairingId: String? = null
     private var selectedMoodEmoji: String = "♥️"
 
@@ -36,16 +40,49 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Initialize Firebase Realtime Sync Manager
         FirebaseSyncManager.init(this)
 
+        setupNavigationDrawer()
         setupUI()
         loadSavedPreferences()
         setupEmojiClickListeners()
     }
 
+    private fun setupNavigationDrawer() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        drawerToggle = ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            binding.toolbar,
+            R.string.drawer_open,
+            R.string.drawer_close
+        )
+        binding.drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+
+        binding.navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+                R.id.nav_about -> startActivity(Intent(this, AboutActivity::class.java))
+                R.id.nav_help -> startActivity(Intent(this, HelpActivity::class.java))
+            }
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun setupUI() {
-        // Connect Button Handler
         binding.btnConnect.setOnClickListener {
             val pairingId = binding.etPairingId.text?.toString()?.trim()?.uppercase()
             if (!pairingId.isNullOrEmpty()) {
@@ -55,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Copy Pairing ID
         binding.btnCopyId.setOnClickListener {
             val pairingId = currentPairingId ?: binding.etPairingId.text?.toString()?.trim()
             if (!pairingId.isNullOrEmpty()) {
@@ -66,14 +102,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Generate Random Pairing ID
         binding.btnGenerateId.setOnClickListener {
             val randomId = FirebaseSyncManager.generatePairingId()
             binding.etPairingId.setText(randomId)
             binding.tilPairingId.error = null
         }
 
-        // Disconnect Button Handler — this is the ONLY place that sets the offline status
         binding.btnDisconnect.setOnClickListener {
             handleDisconnect()
         }
@@ -121,7 +155,6 @@ class MainActivity : AppCompatActivity() {
             onFriendMoodChanged = { friendEmoji, _ ->
                 runOnUiThread {
                     displayFriendMood(friendEmoji)
-                    // Keep Home Screen Widget in sync
                     MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji)
                 }
             },
@@ -173,13 +206,11 @@ class MainActivity : AppCompatActivity() {
         bounceView(clickedCard)
         updateLivePreview(emoji, animate = true)
 
-        // Save locally
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_MY_MOOD, emoji)
             .apply()
 
-        // Push to Firebase Realtime Database
         if (currentPairingId != null) {
             FirebaseSyncManager.updateMyMood(emoji)
         } else {
@@ -222,9 +253,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Only cleans up listeners — does NOT change mood status.
-        // Closing the app, rotating the screen, or backgrounding will
-        // NOT show your partner as offline; only the Disconnect button does that.
         FirebaseSyncManager.disconnect()
     }
 
