@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WeSynced</string>
     <string name="widget_name">WeSynced Widget</string>
-    <string name="app_tagline">Stay connected, always in sync</string>
+    <string name="app_tagline">by wrongxide</string>
     <string name="pairing_title">Pair with your partner</string>
     <string name="hint_pairing_id">Enter pairing ID</string>
     <string name="btn_connect">Connect</string>
