@@ -8,6 +8,7 @@
     <string name="btn_connect">Connect</string>
     <string name="btn_generate_random">Generate Random ID</string>
     <string name="btn_copy_id">Copy ID</string>
+    <string name="btn_disconnect">Disconnect</string>
     <string name="my_current_mood">My Current Mood</string>
     <string name="hint_tap_to_change">Tap to change</string>
     <string name="partner_mood_title">Partner\'s Mood</string>
