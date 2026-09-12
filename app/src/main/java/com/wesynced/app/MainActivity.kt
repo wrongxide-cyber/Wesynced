@@ -17,17 +17,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var currentPairingId: String? = null
-    private var selectedMoodEmoji: String = "😊"
+    private var selectedMoodEmoji: String = "♥️"
 
     private val moodCatalogue = mapOf(
-        "😊" to "Happy & Content",
-        "😴" to "Sleepy & Cozy",
-        "🍿" to "Chill Movie Mode",
-        "😤" to "A Little Grumpy",
-        "❤️" to "Sending Love",
-        "🎉" to "Celebrating Win",
-        "🥳" to "Party Vibe",
-        "☕" to "Need Coffee ASAP"
+        "♥️" to "Safe and Sound",
+        "🥺" to "Missing You",
+        "🙄" to "Oi",
+        "😞" to "Feeling Low",
+        "🫩" to "Bored",
+        "🫦" to "Feeling Horny",
+        "💀" to "Dead Inside",
+        "😕" to "Need You",
+        "😶‍🌫️" to "Gone Offline"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,13 +36,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialize Firebase Realtime Sync Manager
         FirebaseSyncManager.init(this)
+
         setupUI()
         loadSavedPreferences()
         setupEmojiClickListeners()
     }
 
     private fun setupUI() {
+        // Connect Button Handler
         binding.btnConnect.setOnClickListener {
             val pairingId = binding.etPairingId.text?.toString()?.trim()?.uppercase()
             if (!pairingId.isNullOrEmpty()) {
@@ -51,6 +55,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Copy Pairing ID
         binding.btnCopyId.setOnClickListener {
             val pairingId = currentPairingId ?: binding.etPairingId.text?.toString()?.trim()
             if (!pairingId.isNullOrEmpty()) {
@@ -61,17 +66,41 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Generate Random Pairing ID
         binding.btnGenerateId.setOnClickListener {
             val randomId = FirebaseSyncManager.generatePairingId()
             binding.etPairingId.setText(randomId)
             binding.tilPairingId.error = null
         }
+
+        // Disconnect Button Handler
+        binding.btnDisconnect.setOnClickListener {
+            handleDisconnect()
+        }
+    }
+
+    private fun handleDisconnect() {
+        FirebaseSyncManager.disconnect()
+        currentPairingId = null
+
+        binding.cardConnectionBadge.visibility = View.GONE
+        binding.cardPartnerStatus.visibility = View.GONE
+        binding.btnDisconnect.visibility = View.GONE
+        binding.btnConnect.isEnabled = true
+        binding.btnConnect.text = getString(R.string.btn_connect)
+
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .remove(KEY_SAVED_PAIRING_ID)
+            .apply()
+
+        Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
     }
 
     private fun loadSavedPreferences() {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedId = prefs.getString(KEY_SAVED_PAIRING_ID, null)
-        val savedMood = prefs.getString(KEY_MY_MOOD, "😊") ?: "😊"
+        val savedMood = prefs.getString(KEY_MY_MOOD, "♥️") ?: "♥️"
 
         selectedMoodEmoji = savedMood
         updateLivePreview(selectedMoodEmoji, animate = false)
@@ -92,6 +121,7 @@ class MainActivity : AppCompatActivity() {
             onFriendMoodChanged = { friendEmoji, _ ->
                 runOnUiThread {
                     displayFriendMood(friendEmoji)
+                    // Keep Home Screen Widget in sync
                     MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji)
                 }
             },
@@ -99,12 +129,16 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     binding.btnConnect.isEnabled = true
                     binding.btnConnect.text = if (isConnected) "Connected" else "Connect"
+
                     if (isConnected) {
                         currentPairingId = pairingId
                         savePairingId(pairingId)
+
                         binding.tvConnectionBadge.text = "Synced: $pairingId"
                         binding.cardConnectionBadge.visibility = View.VISIBLE
                         binding.cardPartnerStatus.visibility = View.VISIBLE
+                        binding.btnDisconnect.visibility = View.VISIBLE
+
                         Toast.makeText(this, "Connected with partner! 🌸", Toast.LENGTH_SHORT).show()
                         FirebaseSyncManager.updateMyMood(selectedMoodEmoji)
                     } else {
@@ -117,14 +151,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupEmojiClickListeners() {
         val emojiButtons = listOf(
-            binding.btnMoodHappy to "😊",
-            binding.btnMoodSleepy to "😴",
-            binding.btnMoodPopcorn to "🍿",
-            binding.btnMoodGrumpy to "😤",
-            binding.btnMoodHeart to "❤️",
-            binding.btnMoodPartyTada to "🎉",
-            binding.btnMoodPartyFace to "🥳",
-            binding.btnMoodCoffee to "☕"
+            binding.btnMoodHappy to "♥️",
+            binding.btnMoodSleepy to "🥺",
+            binding.btnMoodPopcorn to "🙄",
+            binding.btnMoodGrumpy to "😞",
+            binding.btnMoodHeart to "🫩",
+            binding.btnMoodPartyTada to "🫦",
+            binding.btnMoodPartyFace to "💀",
+            binding.btnMoodCoffee to "😕"
         )
 
         for ((button, emoji) in emojiButtons) {
@@ -139,11 +173,13 @@ class MainActivity : AppCompatActivity() {
         bounceView(clickedCard)
         updateLivePreview(emoji, animate = true)
 
+        // Save locally
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_MY_MOOD, emoji)
             .apply()
 
+        // Push to Firebase Realtime Database
         if (currentPairingId != null) {
             FirebaseSyncManager.updateMyMood(emoji)
         } else {
@@ -154,6 +190,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateLivePreview(emoji: String, animate: Boolean) {
         binding.tvLivePreviewEmoji.text = emoji
         binding.tvLivePreviewLabel.text = moodCatalogue[emoji] ?: "Current Mood"
+
         if (animate) {
             bounceView(binding.cardLivePreviewContainer)
         }
