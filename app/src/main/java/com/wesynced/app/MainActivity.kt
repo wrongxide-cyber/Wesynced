@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.animation.OvershootInterpolator
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -223,12 +223,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bounceView(view: View) {
-        val scaleX = ObjectAnimator.ofFloat(view, View.SCALE_X, 1f, 1.18f, 0.95f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f, 1.18f, 0.95f, 1f)
+        val scaleX = ObjectAnimator.ofFloat(view, View.SCALE_X, 1f, 0.96f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f, 0.96f, 1f)
+        val fade = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0.85f, 1f)
         AnimatorSet().apply {
-            playTogether(scaleX, scaleY)
-            duration = 380
-            interpolator = OvershootInterpolator(1.8f)
+            playTogether(scaleX, scaleY, fade)
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
             start()
         }
     }
