@@ -10,7 +10,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/pastel_background"
+        android:background="@drawable/bg_gradient"
         android:fitsSystemWindows="true"
         tools:context=".MainActivity">
 
@@ -32,7 +32,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="22dp">
 
                     <ImageView
                         android:id="@+id/btnMenu"
@@ -67,7 +67,6 @@
                             android:textColor="@color/text_secondary" />
                     </LinearLayout>
 
-                    <!-- Disconnect Button (shown only when connected) -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnDisconnect"
                         style="@style/Widget.Material3.Button.TextButton"
@@ -79,7 +78,6 @@
                         android:textColor="@color/pastel_purple_dark"
                         tools:visibility="visible" />
 
-                    <!-- Active Connection Badge -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardConnectionBadge"
                         android:layout_width="wrap_content"
@@ -87,6 +85,7 @@
                         android:layout_marginStart="6dp"
                         android:visibility="gone"
                         app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
                         app:cardBackgroundColor="@color/pastel_mint"
                         app:strokeWidth="0dp"
                         tools:visibility="visible">
@@ -111,9 +110,9 @@
                     android:id="@+id/cardPairing"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    android:layout_marginBottom="22dp"
+                    app:cardCornerRadius="26dp"
+                    app:cardElevation="0dp"
                     app:cardBackgroundColor="@color/card_surface"
                     app:strokeWidth="0dp">
 
@@ -173,7 +172,6 @@
                                 app:cornerRadius="14dp" />
                         </LinearLayout>
 
-                        <!-- Action buttons for ID -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -207,9 +205,9 @@
                     android:id="@+id/cardLivePreviewContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="3dp"
+                    android:layout_marginBottom="22dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
                     app:cardBackgroundColor="@color/card_surface"
                     app:strokeWidth="0dp">
 
@@ -272,10 +270,10 @@
                     android:id="@+id/cardPartnerStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="22dp"
                     android:visibility="gone"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    app:cardCornerRadius="26dp"
+                    app:cardElevation="0dp"
                     app:cardBackgroundColor="@color/pastel_lavender_light"
                     app:strokeWidth="0dp"
                     tools:visibility="visible">
@@ -330,13 +328,13 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Mood Selection Card: 8 Interactive Buttons -->
+                <!-- Mood Selection Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    app:cardCornerRadius="26dp"
+                    app:cardElevation="0dp"
                     app:cardBackgroundColor="@color/card_surface"
                     app:strokeWidth="0dp">
 
@@ -371,8 +369,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_peach_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
@@ -391,7 +390,8 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
@@ -411,8 +411,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_butter_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
@@ -431,8 +432,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_rose_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
@@ -459,8 +461,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_rose_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
@@ -479,8 +482,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_mint_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
@@ -499,8 +503,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_butter_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
@@ -519,8 +524,9 @@
                                 android:layout_margin="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                app:cardCornerRadius="16dp"
-                                app:cardBackgroundColor="@color/pastel_brown_soft"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
                                 <TextView
