@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base UI Palette -->
-    <color name="pastel_background">#FAF8F5</color>
+    <color name="pastel_background">#FAF3EA</color>
     <color name="card_surface">#FFFFFF</color>
-    <color name="text_primary">#2D3748</color>
-    <color name="text_secondary">#718096</color>
-
-    <!-- Theme Accents -->
-    <color name="pastel_purple">#B39DDB</color>
-    <color name="pastel_purple_dark">#7E57C2</color>
-    <color name="pastel_lavender_light">#F3E5F5</color>
-    <color name="pastel_lavender_soft">#E1BEE7</color>
-
-    <!-- Emoji Tile Colors -->
-    <color name="pastel_peach_light">#FFE0B2</color>
-    <color name="pastel_peach_soft">#FFCC80</color>
-    <color name="pastel_butter_soft">#FFF59D</color>
-    <color name="pastel_rose_soft">#FFAB91</color>
-    <color name="pastel_mint">#C8E6C9</color>
-    <color name="pastel_mint_soft">#A5D6A7</color>
-    <color name="mint_dark">#2E7D32</color>
-    <color name="pastel_brown_soft">#D7CCC8</color>
+    <color name="pastel_purple">#A79BCC</color>
+    <color name="pastel_purple_dark">#7864B8</color>
+    <color name="pastel_lavender_light">#F3EFFD</color>
+    <color name="pastel_lavender_soft">#EFE8FC</color>
+    <color name="pastel_peach_light">#FFF0EB</color>
+    <color name="pastel_peach_soft">#FFEBE5</color>
+    <color name="pastel_mint">#C8F2DD</color>
+    <color name="pastel_mint_soft">#E1FAEE</color>
+    <color name="mint_dark">#247C55</color>
+    <color name="pastel_butter_soft">#FFF7D9</color>
+    <color name="pastel_rose_soft">#FFE4E6</color>
+    <color name="pastel_brown_soft">#F5EBE6</color>
+    <color name="text_primary">#2D283E</color>
+    <color name="text_secondary">#7A7489</color>
 </resources>
