@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -46,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/app_name"
-                        android:textSize="24sp"
+                        android:textSize="27sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
 
@@ -54,21 +56,23 @@
                         android:id="@+id/tvAppVersion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textSize="13sp"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
                         android:textColor="@color/text_secondary"
                         tools:text="Version 1.1.0" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="18dp"
                         android:gravity="center"
                         android:text="@string/about_greeting"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/pastel_purple_dark" />
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -82,14 +86,16 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="18dp"
-                    android:lineSpacingExtra="6dp"
+                    android:padding="20dp"
+                    android:lineSpacingExtra="7dp"
                     android:text="@string/about_paragraphs"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textColor="@color/text_primary" />
+
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
