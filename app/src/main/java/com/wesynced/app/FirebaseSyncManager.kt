@@ -30,6 +30,33 @@ object FirebaseSyncManager {
     private var myDeviceId: String = ""
     private var activePairingId: String? = null
     private var onFriendMoodChangedCallback: ((String, Long) -> Unit)? = null
+        /**
+     * Saves this device's current FCM push token so the Cloud Function
+     * knows where to send silent pushes. Safe to call even if the app
+     * was woken up standalone by FCM (not from an open MainActivity),
+     * since it reads the saved pairing ID directly from SharedPreferences
+     * rather than relying on in-memory connection state.
+     */
+    fun saveFcmToken(context: Context, token: String) {
+        if (!::database.isInitialized) {
+            init(context)
+        }
+
+        val pairingPrefs = context.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
+        val pairingId = pairingPrefs.getString(MainActivity.KEY_SAVED_PAIRING_ID, null) ?: return
+
+        val deviceId = myDeviceId.ifEmpty {
+            val devicePrefs = context.getSharedPreferences(PREFS_DEVICE, Context.MODE_PRIVATE)
+            devicePrefs.getString(KEY_DEVICE_ID, null) ?: return
+        }
+
+        database.getReference("pairs")
+            .child(pairingId)
+            .child("members")
+            .child(deviceId)
+            .child("fcmToken")
+            .setValue(token)
+    }
 
     // Guards against repeated "connected" notifications and repeated
     // bounce/UI updates when nothing has actually changed.
