@@ -26,4 +26,4 @@ jobs:
           args: deploy --only functions
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          PROJECT_ID: your-project-id-here
+          PROJECT_ID: wesynced
