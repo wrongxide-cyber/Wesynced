@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.wesynced.app.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +36,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!OnboardingActivity.isOnboardingDone(this)) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -163,6 +171,15 @@ class MainActivity : AppCompatActivity() {
 
                         Toast.makeText(this, "Connected with partner! 🌸", Toast.LENGTH_SHORT).show()
                         FirebaseSyncManager.updateMyMood(selectedMoodEmoji)
+
+                        // Register this device's push address now that we're connected
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                task.result?.let { token ->
+                                    FirebaseSyncManager.saveFcmToken(this, token)
+                                }
+                            }
+                        }
                     } else {
                         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                     }
