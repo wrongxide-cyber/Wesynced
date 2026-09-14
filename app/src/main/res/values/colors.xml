@@ -24,4 +24,8 @@
     <color name="text_primary">#2D283E</color>
     <color name="text_secondary">#7A7489</color>
 
+    <color name="switch_thumb">#7864B8</color>
+    <color name="switch_track">#D8D0EC</color>
+    <color name="mood_ripple_color">#FFD1C7</color>
+
 </resources>
