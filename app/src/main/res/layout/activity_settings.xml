@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/card_surface"
-        app:navigationIcon="@drawable/ic_back"
+        android:elevation="0dp"
         app:title="@string/settings_title"
         app:titleTextColor="@color/text_primary" />
 
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/card_surface"
                 app:strokeWidth="0dp">
 
@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/card_surface"
                 app:strokeWidth="0dp">
 
