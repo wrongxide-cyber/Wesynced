@@ -1,19 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="pastel_background">#FAF3EA</color>
-    <color name="card_surface">#FFFFFF</color>
-    <color name="pastel_purple">#A79BCC</color>
-    <color name="pastel_purple_dark">#7864B8</color>
-    <color name="pastel_lavender_light">#F3EFFD</color>
-    <color name="pastel_lavender_soft">#EFE8FC</color>
-    <color name="pastel_peach_light">#FFF0EB</color>
-    <color name="pastel_peach_soft">#FFEBE5</color>
-    <color name="pastel_mint">#C8F2DD</color>
-    <color name="pastel_mint_soft">#E1FAEE</color>
-    <color name="mint_dark">#247C55</color>
-    <color name="pastel_butter_soft">#FFF7D9</color>
-    <color name="pastel_rose_soft">#FFE4E6</color>
-    <color name="pastel_brown_soft">#F5EBE6</color>
-    <color name="text_primary">#2D283E</color>
-    <color name="text_secondary">#7A7489</color>
-</resources>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/pastel_background">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarHelp"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/card_surface"
+        android:elevation="0dp"
+        app:title="@string/help_title"
+        app:titleTextColor="@color/text_primary" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/card_surface"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:lineSpacingExtra="7dp"
+                android:text="@string/help_content"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
