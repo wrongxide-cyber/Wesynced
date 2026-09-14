@@ -16,7 +16,27 @@ import kotlin.random.Random
  * between two devices paired via a Pairing ID using Firebase Realtime Database.
  */
 object FirebaseSyncManager {
-     /**
+
+    private const val TAG = "FirebaseSyncManager"
+    private const val PREFS_DEVICE = "wesynced_device_prefs"
+    private const val KEY_DEVICE_ID = "device_unique_uuid"
+
+    const val DISCONNECT_EMOJI = "😶‍🌫️"
+
+    private lateinit var database: FirebaseDatabase
+    private var pairsRef: DatabaseReference? = null
+    private var currentPairListener: ValueEventListener? = null
+
+    private var myDeviceId: String = ""
+    private var activePairingId: String? = null
+    private var onFriendMoodChangedCallback: ((String, Long) -> Unit)? = null
+
+    // Guards against repeated "connected" notifications and repeated
+    // bounce/UI updates when nothing has actually changed.
+    private var hasNotifiedConnected = false
+    private var lastFriendEmoji: String? = null
+
+    /**
      * Saves this device's current FCM push token so the Cloud Function
      * knows where to send silent pushes. Safe to call even if the app
      * was woken up standalone by FCM (not from an open MainActivity),
@@ -42,27 +62,7 @@ object FirebaseSyncManager {
             .child(deviceId)
             .child("fcmToken")
             .setValue(token)
-
-    private const val TAG = "FirebaseSyncManager"
-    private const val PREFS_DEVICE = "wesynced_device_prefs"
-    private const val KEY_DEVICE_ID = "device_unique_uuid"
-
-    const val DISCONNECT_EMOJI = "😶‍🌫️"
-
-    private lateinit var database: FirebaseDatabase
-    private var pairsRef: DatabaseReference? = null
-    private var currentPairListener: ValueEventListener? = null
-
-    private var myDeviceId: String = ""
-    private var activePairingId: String? = null
-    private var onFriendMoodChangedCallback: ((String, Long) -> Unit)? = null
-       
     }
-
-    // Guards against repeated "connected" notifications and repeated
-    // bounce/UI updates when nothing has actually changed.
-    private var hasNotifiedConnected = false
-    private var lastFriendEmoji: String? = null
 
     /**
      * Initializes Firebase Realtime Database with offline persistence enabled.
@@ -145,9 +145,6 @@ object FirebaseSyncManager {
         }
 
         pairRef.addValueEventListener(currentPairListener!!)
-        // Note: no onDisconnect() auto-trigger registered here on purpose.
-        // Closing/backgrounding the app must NOT change the partner's view of your mood.
-        // Only disconnectManually() (Disconnect button) sets the offline status.
     }
 
     /**
