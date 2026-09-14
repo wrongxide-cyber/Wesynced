@@ -42,4 +42,10 @@
 
     <string name="help_title">How It Works</string>
     <string name="help_content">Getting Started\n\n1. Tap \"Generate Random ID\" to create your own pairing code, or type in one your partner already shared with you.\n2. Tap \"Connect\" to start syncing.\n3. Once connected, tap any emoji below to update your mood — your partner sees it instantly.\n\nStaying Connected\n\nYour mood stays visible to your partner even if you close the app. It only changes when you pick a new one, or tap \"Disconnect.\"\n\nThe Widget\n\nAdd the WeSynced widget to your home screen to see your partner\'s mood at a glance, without ever opening the app.\n\nDisconnecting\n\nTapping \"Disconnect\" lets your partner know you\'ve intentionally stepped away — until then, your last mood stays exactly as you left it.\n\nReconnecting\n\nJust enter the same pairing ID again anytime to pick up right where you left off.</string>
-</resources>
+
+    <string name="onboarding_slide1_title">Keep the connection live and Instant. ⚡</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_slide2_title">Turn off battery optimization for WeSynced.</string>
+    <string name="onboarding_slide2_body">We promise it won\'t drain your phone. The background check finishes in milliseconds and consumes under 1% of your battery throughout the whole day. Just pure, quiet sync.</string>
+    <string name="onboarding_battery_button">Turn Off Battery Saver</string>
+    <string name="onboarding_skip">Skip for now</string>
