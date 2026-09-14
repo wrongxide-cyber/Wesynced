@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -53,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         setupUI()
         loadSavedPreferences()
         setupEmojiClickListeners()
+
+        startContinuousMoodRipple()
     }
 
     private fun setupNavigationDrawer() {
@@ -101,14 +102,20 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnCopyId.setOnClickListener {
             val pairingId =
-                currentPairingId ?: binding.etPairingId.text?.toString()?.trim()
+                currentPairingId
+                    ?: binding.etPairingId.text?.toString()?.trim()
 
             if (!pairingId.isNullOrEmpty()) {
                 val clipboard =
-                    getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    getSystemService(
+                        Context.CLIPBOARD_SERVICE
+                    ) as ClipboardManager
 
                 val clip =
-                    ClipData.newPlainText("Pairing ID", pairingId)
+                    ClipData.newPlainText(
+                        "Pairing ID",
+                        pairingId
+                    )
 
                 clipboard.setPrimaryClip(clip)
 
@@ -121,7 +128,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnGenerateId.setOnClickListener {
-            val randomId = FirebaseSyncManager.generatePairingId()
+            val randomId =
+                FirebaseSyncManager.generatePairingId()
 
             binding.etPairingId.setText(randomId)
             binding.tilPairingId.error = null
@@ -134,16 +142,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDisconnect() {
         FirebaseSyncManager.disconnectManually()
+
         currentPairingId = null
 
-        binding.cardConnectionBadge.visibility = View.GONE
-        binding.cardPartnerStatus.visibility = View.GONE
-        binding.btnDisconnect.visibility = View.GONE
+        binding.cardConnectionBadge.visibility =
+            View.GONE
+
+        binding.cardPartnerStatus.visibility =
+            View.GONE
+
+        binding.btnDisconnect.visibility =
+            View.GONE
 
         setMyMoodCardFullWidth(true)
 
         binding.btnConnect.isEnabled = true
-        binding.btnConnect.text = getString(R.string.btn_connect)
+
+        binding.btnConnect.text =
+            getString(R.string.btn_connect)
 
         getSharedPreferences(
             PREFS_NAME,
@@ -168,10 +184,16 @@ class MainActivity : AppCompatActivity() {
             )
 
         val savedId =
-            prefs.getString(KEY_SAVED_PAIRING_ID, null)
+            prefs.getString(
+                KEY_SAVED_PAIRING_ID,
+                null
+            )
 
         val savedMood =
-            prefs.getString(KEY_MY_MOOD, "♥️") ?: "♥️"
+            prefs.getString(
+                KEY_MY_MOOD,
+                "♥️"
+            ) ?: "♥️"
 
         selectedMoodEmoji = savedMood
 
@@ -208,6 +230,7 @@ class MainActivity : AppCompatActivity() {
 
             onStatusChanged = { isConnected, message ->
                 runOnUiThread {
+
                     binding.btnConnect.isEnabled = true
 
                     binding.btnConnect.text =
@@ -218,7 +241,9 @@ class MainActivity : AppCompatActivity() {
                         }
 
                     if (isConnected) {
-                        currentPairingId = pairingId
+
+                        currentPairingId =
+                            pairingId
 
                         savePairingId(pairingId)
 
@@ -252,11 +277,13 @@ class MainActivity : AppCompatActivity() {
                             .addOnCompleteListener { task ->
 
                                 if (task.isSuccessful) {
+
                                     task.result?.let { token ->
-                                        FirebaseSyncManager.saveFcmToken(
-                                            this,
-                                            token
-                                        )
+                                        FirebaseSyncManager
+                                            .saveFcmToken(
+                                                this,
+                                                token
+                                            )
                                     }
                                 }
                             }
@@ -274,6 +301,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupEmojiClickListeners() {
+
         val emojiButtons = listOf(
             binding.btnMoodHappy to "♥️",
             binding.btnMoodSleepy to "🥺",
@@ -286,6 +314,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         for ((button, emoji) in emojiButtons) {
+
             button.setOnClickListener {
                 onMoodSelected(
                     emoji,
@@ -299,6 +328,7 @@ class MainActivity : AppCompatActivity() {
         emoji: String,
         clickedCard: MaterialCardView
     ) {
+
         selectedMoodEmoji = emoji
 
         bounceView(clickedCard)
@@ -313,12 +343,19 @@ class MainActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         )
             .edit()
-            .putString(KEY_MY_MOOD, emoji)
+            .putString(
+                KEY_MY_MOOD,
+                emoji
+            )
             .apply()
 
         if (currentPairingId != null) {
-            FirebaseSyncManager.updateMyMood(emoji)
+
+            FirebaseSyncManager
+                .updateMyMood(emoji)
+
         } else {
+
             Toast.makeText(
                 this,
                 "Connect with a Pairing ID to share live!",
@@ -331,61 +368,132 @@ class MainActivity : AppCompatActivity() {
         emoji: String,
         animate: Boolean
     ) {
-        binding.tvLivePreviewEmoji.text = emoji
+
+        binding.tvLivePreviewEmoji.text =
+            emoji
 
         binding.tvLivePreviewLabel.text =
-            moodCatalogue[emoji] ?: "Current Mood"
+            moodCatalogue[emoji]
+                ?: "Current Mood"
 
         if (animate) {
             bounceView(
                 binding.cardLivePreviewContainer
             )
-
-            playMoodRipple()
         }
     }
 
-    private fun playMoodRipple() {
-        val ripples = listOf(
-            binding.viewMoodRippleOuter,
-            binding.viewMoodRippleInner
-        )
+    /*
+     * Two staggered ripple circles continuously expand
+     * behind the user's mood emoji.
+     */
+    private fun startContinuousMoodRipple() {
 
-        ripples.forEachIndexed { index, view ->
+        binding.viewMoodRippleOuter.post {
 
-            view.animate().cancel()
+            animateRipple(
+                binding.viewMoodRippleOuter,
+                0L
+            )
 
-            view.scaleX = 0.55f
-            view.scaleY = 0.55f
-            view.alpha = 0.35f
-
-            view.animate()
-                .scaleX(1.0f)
-                .scaleY(1.0f)
-                .alpha(0f)
-                .setStartDelay(index * 120L)
-                .setDuration(650L)
-                .setInterpolator(
-                    AccelerateDecelerateInterpolator()
-                )
-                .start()
+            animateRipple(
+                binding.viewMoodRippleInner,
+                700L
+            )
         }
+    }
+
+    private fun animateRipple(
+        view: View,
+        delay: Long
+    ) {
+
+        view.animate().cancel()
+
+        view.scaleX = 0.55f
+        view.scaleY = 0.55f
+        view.alpha = 0.45f
+
+        view.animate()
+            .scaleX(1.0f)
+            .scaleY(1.0f)
+            .alpha(0f)
+            .setStartDelay(delay)
+            .setDuration(1400L)
+            .setInterpolator(
+                AccelerateDecelerateInterpolator()
+            )
+            .withEndAction {
+
+                if (!isFinishing && !isDestroyed) {
+                    animateRipple(
+                        view,
+                        0L
+                    )
+                }
+            }
+            .start()
+    }
+
+    /*
+     * When connected, both mood cards receive exactly
+     * the same width allocation.
+     *
+     * When disconnected, My Mood expands back to full width.
+     */
+    private fun setMyMoodCardFullWidth(
+        fullWidth: Boolean
+    ) {
+
+        val params =
+            binding.cardLivePreviewContainer
+                .layoutParams
+                    as android.widget.LinearLayout.LayoutParams
+
+        if (fullWidth) {
+
+            params.width =
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT
+
+            params.weight = 0f
+            params.marginEnd = 0
+
+        } else {
+
+            params.width = 0
+            params.weight = 1f
+
+            params.marginEnd =
+                (
+                    6 *
+                        resources.displayMetrics.density
+                    ).toInt()
+        }
+
+        binding.cardLivePreviewContainer
+            .layoutParams = params
     }
 
     private fun displayFriendMood(
         friendEmoji: String
     ) {
-        binding.tvFriendEmoji.text = friendEmoji
+
+        binding.tvFriendEmoji.text =
+            friendEmoji
 
         binding.tvFriendStatus.text =
-            moodCatalogue[friendEmoji] ?: "Live Mood"
+            moodCatalogue[friendEmoji]
+                ?: "Live Mood"
 
         bounceView(
             binding.cardPartnerStatus
         )
     }
 
-    private fun bounceView(view: View) {
+    private fun bounceView(
+        view: View
+    ) {
+
         val scaleX =
             ObjectAnimator.ofFloat(
                 view,
@@ -414,6 +522,7 @@ class MainActivity : AppCompatActivity() {
             )
 
         AnimatorSet().apply {
+
             playTogether(
                 scaleX,
                 scaleY,
@@ -429,38 +538,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setMyMoodCardFullWidth(
-        fullWidth: Boolean
-    ) {
-        val params =
-            binding.cardLivePreviewContainer
-                .layoutParams as LinearLayout.LayoutParams
-
-        if (fullWidth) {
-            params.width =
-                LinearLayout.LayoutParams.MATCH_PARENT
-
-            params.weight = 0f
-            params.marginEnd = 0
-
-        } else {
-            params.width = 0
-            params.weight = 1f
-
-            params.marginEnd =
-                (
-                    6 *
-                        resources.displayMetrics.density
-                    ).toInt()
-        }
-
-        binding.cardLivePreviewContainer.layoutParams =
-            params
-    }
-
     private fun savePairingId(
         pairingId: String
     ) {
+
         getSharedPreferences(
             PREFS_NAME,
             Context.MODE_PRIVATE
@@ -474,13 +555,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+
+        binding.viewMoodRippleOuter
+            .animate()
+            .cancel()
+
+        binding.viewMoodRippleInner
+            .animate()
+            .cancel()
+
         super.onDestroy()
 
         FirebaseSyncManager.disconnect()
     }
 
     companion object {
-        const val PREFS_NAME = "wesynced_prefs"
+
+        const val PREFS_NAME =
+            "wesynced_prefs"
+
         const val KEY_SAVED_PAIRING_ID =
             "saved_pairing_id"
 
