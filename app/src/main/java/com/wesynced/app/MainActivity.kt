@@ -461,4 +461,211 @@ class MainActivity : AppCompatActivity() {
 
         bounceView(binding.cardPartnerStatus)
 
-        if (isAppInForeg
+        if (isAppInForeground) {
+            HapticHelper.triggerCalmPulse(this)
+        }
+    }
+
+    private fun refreshFriendLastUpdatedText() {
+        if (!::binding.isInitialized || friendLastUpdateMillis <= 0L) return
+        binding.tvFriendLastUpdated.text = formatRelativeTime(friendLastUpdateMillis)
+    }
+
+    private fun formatRelativeTime(timestampMillis: Long): String {
+        val diffMs = (System.currentTimeMillis() - timestampMillis).coerceAtLeast(0L)
+        val minutes = diffMs / 60_000
+        val hours = minutes / 60
+        val days = hours / 24
+
+        return when {
+            minutes < 1 -> getString(R.string.updated_just_now)
+            minutes < 60 -> getString(R.string.updated_minutes_ago, minutes)
+            hours < 24 -> getString(R.string.updated_hours_ago, hours)
+            else -> getString(R.string.updated_days_ago, days)
+        }
+    }
+
+    private fun bounceView(view: View) {
+        val scaleX = ObjectAnimator.ofFloat(view, View.SCALE_X, 1f, 0.96f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f, 0.96f, 1f)
+        val fade = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0.85f, 1f)
+        AnimatorSet().apply {
+            playTogether(scaleX, scaleY, fade)
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+    }
+
+    private fun savePairingId(pairingId: String) {
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_SAVED_PAIRING_ID, pairingId)
+            .apply()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bubbleHandler.removeCallbacksAndMessages(null)
+        FirebaseSyncManager.disconnect()
+    }
+
+    // --- Floating emoji bubbles -------------------------------------------------
+    // Starts once pairing succeeds and the pairing card disappears, using the
+    // reserved box at the bottom of the screen. Bubbles drift in from a random
+    // edge, wander to a few random spots inside the box, then drift back out
+    // through a random edge. Capped at MAX_FLOATING_BUBBLES on screen at once.
+
+    private fun startFloatingBubbles() {
+        binding.floatingBubbleContainer.visibility = View.VISIBLE
+        if (bubblesRunning) return
+        bubblesRunning = true
+        bubbleHandler.post(bubbleSpawnRunnable)
+    }
+
+    /** Pauses spawning (e.g. app backgrounded) without clearing existing bubbles. */
+    private fun pauseFloatingBubbles() {
+        bubblesRunning = false
+        bubbleHandler.removeCallbacks(bubbleSpawnRunnable)
+    }
+
+    /** Fully stops and clears bubbles (e.g. user disconnected). */
+    private fun stopFloatingBubbles() {
+        bubblesRunning = false
+        bubbleHandler.removeCallbacksAndMessages(null)
+        binding.floatingBubbleContainer.removeAllViews()
+        activeBubbles.clear()
+        binding.floatingBubbleContainer.visibility = View.GONE
+    }
+
+    private fun spawnBubbleIfRoom() {
+        if (activeBubbles.size >= MAX_FLOATING_BUBBLES) return
+
+        val container = binding.floatingBubbleContainer
+        val containerWidth = container.width
+        val containerHeight = container.height
+        if (containerWidth == 0 || containerHeight == 0) return // not laid out yet, try next tick
+
+        val bubbleSizePx = (36 * resources.displayMetrics.density).toInt()
+
+        val bubble = TextView(this).apply {
+            text = floatingEmojis.random()
+            textSize = 26f
+            alpha = 0f
+        }
+
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        container.addView(bubble, params)
+        activeBubbles.add(bubble)
+
+        // Usable travel range inside the box, so the emoji never gets clipped at an edge.
+        val maxX = (containerWidth - bubbleSizePx).coerceAtLeast(0)
+        val maxY = (containerHeight - bubbleSizePx).coerceAtLeast(0)
+        fun randomX() = Random.nextInt(0, maxX + 1).toFloat()
+        fun randomY() = Random.nextInt(0, maxY + 1).toFloat()
+
+        // Enter from a random edge (left, right, top, or bottom) instead of always
+        // sliding straight across, so the motion never reads as a fixed lane.
+        val enterEdge = Random.nextInt(4)
+        val startX: Float
+        val startY: Float
+        when (enterEdge) {
+            0 -> { startX = -bubbleSizePx.toFloat(); startY = randomY() }
+            1 -> { startX = containerWidth.toFloat(); startY = randomY() }
+            2 -> { startX = randomX(); startY = -bubbleSizePx.toFloat() }
+            else -> { startX = randomX(); startY = containerHeight.toFloat() }
+        }
+        bubble.translationX = startX
+        bubble.translationY = startY
+
+        // Slow drift settings: bigger duration = slower movement.
+        val enterDurationMs = 2600L
+        val exitDurationMs = 2600L
+        fun randomWanderDurationMs() = Random.nextLong(2400L, 3601L)
+
+        /** Sends the bubble drifting back out through a random edge, then removes it. */
+        fun driftOutAndRemove(fromX: Float, fromY: Float) {
+            val exitEdge = Random.nextInt(4)
+            val exitX: Float
+            val exitY: Float
+            when (exitEdge) {
+                0 -> { exitX = -bubbleSizePx.toFloat(); exitY = randomY() }
+                1 -> { exitX = containerWidth.toFloat(); exitY = randomY() }
+                2 -> { exitX = randomX(); exitY = -bubbleSizePx.toFloat() }
+                else -> { exitX = randomX(); exitY = containerHeight.toFloat() }
+            }
+            AnimatorSet().apply {
+                playTogether(
+                    ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, fromX, exitX),
+                    ObjectAnimator.ofFloat(bubble, View.TRANSLATION_Y, fromY, exitY),
+                    ObjectAnimator.ofFloat(bubble, View.ALPHA, 1f, 0f)
+                )
+                duration = exitDurationMs
+                interpolator = AccelerateDecelerateInterpolator()
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        container.removeView(bubble)
+                        activeBubbles.remove(bubble)
+                    }
+                })
+                start()
+            }
+        }
+
+        /** Drifts the bubble to another random point inside the box, then repeats or exits. */
+        fun wander(hopsLeft: Int, fromX: Float, fromY: Float) {
+            if (hopsLeft <= 0) {
+                driftOutAndRemove(fromX, fromY)
+                return
+            }
+            val nextX = randomX()
+            val nextY = randomY()
+            AnimatorSet().apply {
+                playTogether(
+                    ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, fromX, nextX),
+                    ObjectAnimator.ofFloat(bubble, View.TRANSLATION_Y, fromY, nextY)
+                )
+                duration = randomWanderDurationMs()
+                interpolator = AccelerateDecelerateInterpolator()
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        if (!activeBubbles.contains(bubble)) return
+                        wander(hopsLeft - 1, nextX, nextY)
+                    }
+                })
+                start()
+            }
+        }
+
+        // Drift in from the edge to a random resting spot, then start wandering.
+        val firstX = randomX()
+        val firstY = randomY()
+        AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, startX, firstX),
+                ObjectAnimator.ofFloat(bubble, View.TRANSLATION_Y, startY, firstY),
+                ObjectAnimator.ofFloat(bubble, View.ALPHA, 0f, 1f)
+            )
+            duration = enterDurationMs
+            interpolator = AccelerateDecelerateInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    if (!activeBubbles.contains(bubble)) return
+                    wander(Random.nextInt(2, 4), firstX, firstY)
+                }
+            })
+            start()
+        }
+    }
+
+    companion object {
+        const val PREFS_NAME = "wesynced_prefs"
+        const val KEY_SAVED_PAIRING_ID = "saved_pairing_id"
+        const val KEY_MY_MOOD = "saved_my_mood"
+        const val KEY_WIDGET_PROMPT_SHOWN = "widget_prompt_shown"
+        const val MAX_FLOATING_BUBBLES = 5
+    }
+}
