@@ -1,5 +1,7 @@
 package com.wesynced.app
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.appwidget.AppWidgetManager
@@ -20,6 +22,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -47,7 +52,13 @@ class MainActivity : AppCompatActivity() {
 
     // Floating emoji bubbles shown in the reserved space at the bottom
     // once pairing succeeds. Only ever a handful on screen at once.
-    private val floatingEmojis = listOf("💌", "✨", "🌸", "💫", "🎈", "🕊️", "🌷", "☁️", "💜", "🍡")
+    private val floatingEmojis = listOf(
+        "💌", "✨", "🌸", "💫", "🎈", "🕊️", "🌷", "☁️", "💜", "🍡",
+        "🌟", "🦋", "🌺", "🌼", "🍭", "🧸", "🌙", "⭐", "🌈", "🍬",
+        "🐝", "🐣", "🌻", "🍓", "🎀", "💐", "🪅", "🌊", "🍀", "🦢",
+        "🐥", "🌹", "🍥", "🥰", "😊", "🩷", "💗", "💖", "🫶", "🌱",
+        "🍒", "🍑", "🦄", "🐰", "🐻", "🍩", "🧁", "🍦", "🎉", "🪄"
+    )
     private val activeBubbles = mutableListOf<View>()
     private val bubbleHandler = Handler(Looper.getMainLooper())
     private var bubblesRunning = false
@@ -113,6 +124,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavigationDrawer() {
+        // Keep the drawer's branding header clear of the status bar on every
+        // device, regardless of how each Android version draws system bars.
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { view, insets ->
+            val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarTop)
+            insets
+        }
+
         binding.btnMenu.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -442,155 +461,4 @@ class MainActivity : AppCompatActivity() {
 
         bounceView(binding.cardPartnerStatus)
 
-        if (isAppInForeground) {
-            HapticHelper.triggerCalmPulse(this)
-        }
-    }
-
-    private fun refreshFriendLastUpdatedText() {
-        if (!::binding.isInitialized || friendLastUpdateMillis <= 0L) return
-        binding.tvFriendLastUpdated.text = formatRelativeTime(friendLastUpdateMillis)
-    }
-
-    private fun formatRelativeTime(timestampMillis: Long): String {
-        val diffMs = (System.currentTimeMillis() - timestampMillis).coerceAtLeast(0L)
-        val minutes = diffMs / 60_000
-        val hours = minutes / 60
-        val days = hours / 24
-
-        return when {
-            minutes < 1 -> getString(R.string.updated_just_now)
-            minutes < 60 -> getString(R.string.updated_minutes_ago, minutes)
-            hours < 24 -> getString(R.string.updated_hours_ago, hours)
-            else -> getString(R.string.updated_days_ago, days)
-        }
-    }
-
-    private fun bounceView(view: View) {
-        val scaleX = ObjectAnimator.ofFloat(view, View.SCALE_X, 1f, 0.96f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f, 0.96f, 1f)
-        val fade = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0.85f, 1f)
-        AnimatorSet().apply {
-            playTogether(scaleX, scaleY, fade)
-            duration = 150
-            interpolator = AccelerateDecelerateInterpolator()
-            start()
-        }
-    }
-
-    private fun savePairingId(pairingId: String) {
-        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putString(KEY_SAVED_PAIRING_ID, pairingId)
-            .apply()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        bubbleHandler.removeCallbacksAndMessages(null)
-        FirebaseSyncManager.disconnect()
-    }
-
-    // --- Floating emoji bubbles -------------------------------------------------
-    // Starts once pairing succeeds and the pairing card disappears, using the
-    // reserved box at the bottom of the screen. Bubbles drift in from one side,
-    // hold, then drift out the OPPOSITE side and are removed. Capped at
-    // MAX_FLOATING_BUBBLES on screen at any time so it never feels cluttered.
-
-    private fun startFloatingBubbles() {
-        binding.floatingBubbleContainer.visibility = View.VISIBLE
-        if (bubblesRunning) return
-        bubblesRunning = true
-        bubbleHandler.post(bubbleSpawnRunnable)
-    }
-
-    /** Pauses spawning (e.g. app backgrounded) without clearing existing bubbles. */
-    private fun pauseFloatingBubbles() {
-        bubblesRunning = false
-        bubbleHandler.removeCallbacks(bubbleSpawnRunnable)
-    }
-
-    /** Fully stops and clears bubbles (e.g. user disconnected). */
-    private fun stopFloatingBubbles() {
-        bubblesRunning = false
-        bubbleHandler.removeCallbacksAndMessages(null)
-        binding.floatingBubbleContainer.removeAllViews()
-        activeBubbles.clear()
-        binding.floatingBubbleContainer.visibility = View.GONE
-    }
-
-    private fun spawnBubbleIfRoom() {
-        if (activeBubbles.size >= MAX_FLOATING_BUBBLES) return
-
-        val container = binding.floatingBubbleContainer
-        val containerWidth = container.width
-        val containerHeight = container.height
-        if (containerWidth == 0 || containerHeight == 0) return // not laid out yet, try next tick
-
-        val bubbleSizePx = (36 * resources.displayMetrics.density).toInt()
-
-        val bubble = TextView(this).apply {
-            text = floatingEmojis.random()
-            textSize = 26f
-            alpha = 0f
-        }
-
-        val params = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        )
-        val maxTopMargin = (containerHeight - bubbleSizePx).coerceAtLeast(0)
-        params.topMargin = Random.nextInt(0, maxTopMargin + 1)
-        container.addView(bubble, params)
-        activeBubbles.add(bubble)
-
-        val enterFromLeft = Random.nextBoolean()
-        val startX = if (enterFromLeft) -bubbleSizePx.toFloat() else containerWidth.toFloat()
-        val restX = if (enterFromLeft) {
-            containerWidth * 0.15f
-        } else {
-            containerWidth * 0.85f - bubbleSizePx
-        }
-        val exitX = if (enterFromLeft) containerWidth.toFloat() else -bubbleSizePx.toFloat()
-
-        bubble.translationX = startX
-
-        AnimatorSet().apply {
-            playTogether(
-                ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, startX, restX),
-                ObjectAnimator.ofFloat(bubble, View.ALPHA, 0f, 1f)
-            )
-            duration = 900
-            interpolator = AccelerateDecelerateInterpolator()
-            start()
-        }
-
-        val holdDurationMs = Random.nextLong(2200L, 3800L)
-        bubble.postDelayed({
-            if (!activeBubbles.contains(bubble)) return@postDelayed
-
-            AnimatorSet().apply {
-                playTogether(
-                    ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, restX, exitX),
-                    ObjectAnimator.ofFloat(bubble, View.ALPHA, 1f, 0f)
-                )
-                duration = 900
-                interpolator = AccelerateDecelerateInterpolator()
-                start()
-            }
-
-            bubble.postDelayed({
-                container.removeView(bubble)
-                activeBubbles.remove(bubble)
-            }, 950L)
-        }, holdDurationMs)
-    }
-
-    companion object {
-        const val PREFS_NAME = "wesynced_prefs"
-        const val KEY_SAVED_PAIRING_ID = "saved_pairing_id"
-        const val KEY_MY_MOOD = "saved_my_mood"
-        const val KEY_WIDGET_PROMPT_SHOWN = "widget_prompt_shown"
-        const val MAX_FLOATING_BUBBLES = 5
-    }
-}
+        if (isAppInForeg
