@@ -52,6 +52,16 @@
     <string name="onboarding_battery_button">Turn Off Battery Saver</string>
     <string name="onboarding_skip">Skip for now</string>
 
+    <string name="onboarding_slide3_title">One last step 🔒</string>
+    <string name="onboarding_slide3_intro">On most phones, swiping WeSynced away from Recent Apps quietly kills it in the background. Locking it in place fixes that.</string>
+    <string name="onboarding_slide3_button">Got It, I\'m Ready</string>
+    <string name="onboarding_slide3_steps_xiaomi">1. Open Recent Apps\n2. Find WeSynced\n3. Tap and hold its card\n4. Tap the lock icon 🔒</string>
+    <string name="onboarding_slide3_steps_samsung">1. Open Recent Apps\n2. Find WeSynced\n3. Tap the small app icon at the top of its card\n4. Tap \"Lock this app\"</string>
+    <string name="onboarding_slide3_steps_coloros">1. Open Recent Apps\n2. Find WeSynced\n3. Tap and hold its card\n4. Tap the lock icon 🔒</string>
+    <string name="onboarding_slide3_steps_nokia">1. Open Settings → Battery\n2. Tap \"Battery protection\"\n3. Add WeSynced to the protected apps list</string>
+    <string name="onboarding_slide3_steps_stock">Your phone runs close to stock Android, so there\'s no extra lock step here — the battery permission you just granted is enough.</string>
+    <string name="onboarding_slide3_steps_default">1. Open Recent Apps\n2. Find WeSynced\n3. Tap and hold its card\n4. Look for a lock icon 🔒 or an option like \"Keep in background\"</string>
+
     <string name="custom_mood_placeholder">➕</string>
     <string name="custom_mood_fallback_label">New Mood</string>
     <string name="custom_mood_tap_hold_hint">Long-press this slot to change it</string>
