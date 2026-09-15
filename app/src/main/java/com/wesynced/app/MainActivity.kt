@@ -9,10 +9,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.messaging.FirebaseMessaging
 import com.wesynced.app.databinding.ActivityMainBinding
 
@@ -21,8 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentPairingId: String? = null
     private var selectedMoodEmoji: String = "♥️"
+    private lateinit var customSlotViews: List<Pair<MaterialCardView, TextView>>
 
-    private val moodCatalogue = mapOf(
+    private val moodCatalogue = mutableMapOf(
         "♥️" to "Safe and Sound",
         "🥺" to "Missing You",
         "🙄" to "Oi",
@@ -52,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         setupUI()
         loadSavedPreferences()
         setupEmojiClickListeners()
+        setupCustomMoodSlots()
     }
 
     private fun setupNavigationDrawer() {
@@ -211,6 +216,76 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupCustomMoodSlots() {
+        customSlotViews = listOf(
+            binding.btnMoodCustom1 to binding.tvCustomEmoji1,
+            binding.btnMoodCustom2 to binding.tvCustomEmoji2,
+            binding.btnMoodCustom3 to binding.tvCustomEmoji3,
+            binding.btnMoodCustom4 to binding.tvCustomEmoji4
+        )
+
+        for (index in customSlotViews.indices) {
+            val (card, _) = customSlotViews[index]
+            val savedEmoji = AppSettings.getCustomMoodEmoji(this, index)
+            val savedLabel = AppSettings.getCustomMoodLabel(this, index)
+
+            if (!savedEmoji.isNullOrBlank() && !savedLabel.isNullOrBlank()) {
+                applyCustomMoodSlot(index, savedEmoji, savedLabel)
+            } else {
+                card.setOnClickListener {
+                    showCustomMoodDialog(index)
+                }
+            }
+
+            card.setOnLongClickListener {
+                showCustomMoodDialog(index)
+                true
+            }
+        }
+    }
+
+    private fun showCustomMoodDialog(slotIndex: Int) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_custom_mood, null)
+        val etEmoji = dialogView.findViewById<TextInputEditText>(R.id.etCustomEmoji)
+        val etLabel = dialogView.findViewById<TextInputEditText>(R.id.etCustomLabel)
+
+        val existingEmoji = AppSettings.getCustomMoodEmoji(this, slotIndex)
+        val existingLabel = AppSettings.getCustomMoodLabel(this, slotIndex)
+
+        if (!existingEmoji.isNullOrBlank()) {
+            etEmoji.setText(existingEmoji)
+            etLabel.setText(existingLabel)
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.dialog_custom_mood_title))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.dialog_save)) { _, _ ->
+                val emoji = etEmoji.text?.toString()?.trim().orEmpty()
+                val label = etLabel.text?.toString()?.trim().orEmpty()
+
+                if (emoji.isNotEmpty() && label.isNotEmpty()) {
+                    AppSettings.setCustomMood(this, slotIndex, emoji, label)
+                    applyCustomMoodSlot(slotIndex, emoji, label)
+                } else {
+                    Toast.makeText(this, "Please enter both an emoji and a name", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
+            .show()
+    }
+
+    private fun applyCustomMoodSlot(slotIndex: Int, emoji: String, label: String) {
+        moodCatalogue[emoji] = label
+
+        val (card, textView) = customSlotViews[slotIndex]
+        textView.text = emoji
+
+        card.setOnClickListener {
+            onMoodSelected(emoji, card)
+        }
+    }
+
     private fun onMoodSelected(emoji: String, clickedCard: MaterialCardView) {
         selectedMoodEmoji = emoji
         bounceView(clickedCard)
@@ -230,7 +305,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateLivePreview(emoji: String, animate: Boolean) {
         binding.tvLivePreviewEmoji.text = emoji
-        binding.tvLivePreviewLabel.text = moodCatalogue[emoji] ?: "Current Mood"
+        binding.tvLivePreviewLabel.text =
+            moodCatalogue[emoji] ?: getString(R.string.custom_mood_fallback_label)
 
         if (animate) {
             bounceView(binding.cardLivePreviewContainer)
@@ -239,7 +315,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayFriendMood(friendEmoji: String) {
         binding.tvFriendEmoji.text = friendEmoji
-        binding.tvFriendStatus.text = moodCatalogue[friendEmoji] ?: "Live Mood"
+        binding.tvFriendStatus.text =
+            moodCatalogue[friendEmoji] ?: getString(R.string.custom_mood_fallback_label)
         bounceView(binding.cardPartnerStatus)
     }
 
