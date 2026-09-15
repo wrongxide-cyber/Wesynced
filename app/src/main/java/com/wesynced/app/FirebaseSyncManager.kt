@@ -22,6 +22,7 @@ object FirebaseSyncManager {
     private const val KEY_DEVICE_ID = "device_unique_uuid"
 
     const val DISCONNECT_EMOJI = "😶‍🌫️"
+    const val DISCONNECT_LABEL = "Gone Offline"
 
     private lateinit var database: FirebaseDatabase
     private var pairsRef: DatabaseReference? = null
@@ -29,12 +30,13 @@ object FirebaseSyncManager {
 
     private var myDeviceId: String = ""
     private var activePairingId: String? = null
-    private var onFriendMoodChangedCallback: ((String, Long) -> Unit)? = null
+    private var onFriendMoodChangedCallback: ((String, String, Long) -> Unit)? = null
 
     // Guards against repeated "connected" notifications and repeated
     // bounce/UI updates when nothing has actually changed.
     private var hasNotifiedConnected = false
     private var lastFriendEmoji: String? = null
+    private var lastFriendLabel: String? = null
 
     /**
      * Saves this device's current FCM push token so the Cloud Function
@@ -92,7 +94,7 @@ object FirebaseSyncManager {
      */
     fun connect(
         pairingId: String,
-        onFriendMoodChanged: (emoji: String, timestamp: Long) -> Unit,
+        onFriendMoodChanged: (emoji: String, label: String, timestamp: Long) -> Unit,
         onStatusChanged: (isConnected: Boolean, message: String) -> Unit
     ) {
         disconnect()
@@ -102,6 +104,7 @@ object FirebaseSyncManager {
         onFriendMoodChangedCallback = onFriendMoodChanged
         hasNotifiedConnected = false
         lastFriendEmoji = null
+        lastFriendLabel = null
 
         val pairRef = database.getReference("pairs").child(cleanId).child("members")
         pairsRef = pairRef
@@ -125,14 +128,16 @@ object FirebaseSyncManager {
                     // Any member node that is NOT myDeviceId is our paired friend!
                     if (memberKey != myDeviceId) {
                         val friendEmoji = memberSnapshot.child("mood").getValue(String::class.java) ?: "♥️"
+                        val friendLabel = memberSnapshot.child("label").getValue(String::class.java) ?: ""
                         val timestamp = memberSnapshot.child("timestamp").getValue(Long::class.java) ?: System.currentTimeMillis()
 
                         // Only trigger the UI update (and bounce animation) if the
-                        // friend's emoji actually changed since last time.
-                        if (friendEmoji != lastFriendEmoji) {
+                        // friend's emoji or custom text actually changed since last time.
+                        if (friendEmoji != lastFriendEmoji || friendLabel != lastFriendLabel) {
                             lastFriendEmoji = friendEmoji
-                            Log.d(TAG, "Received partner mood update: $friendEmoji at $timestamp")
-                            onFriendMoodChangedCallback?.invoke(friendEmoji, timestamp)
+                            lastFriendLabel = friendLabel
+                            Log.d(TAG, "Received partner mood update: $friendEmoji ($friendLabel) at $timestamp")
+                            onFriendMoodChangedCallback?.invoke(friendEmoji, friendLabel, timestamp)
                         }
                     }
                 }
@@ -148,9 +153,10 @@ object FirebaseSyncManager {
     }
 
     /**
-     * Updates this device's mood under /pairs/{pairingId}/members/{myDeviceId}
+     * Updates this device's mood (and its custom text) under
+     * /pairs/{pairingId}/members/{myDeviceId}
      */
-    fun updateMyMood(emoji: String) {
+    fun updateMyMood(emoji: String, label: String = "") {
         val pairingId = activePairingId ?: return
         val myNode = database.getReference("pairs")
             .child(pairingId)
@@ -159,12 +165,13 @@ object FirebaseSyncManager {
 
         val data = mapOf(
             "mood" to emoji,
+            "label" to label,
             "timestamp" to ServerValue.TIMESTAMP,
             "deviceId" to myDeviceId
         )
 
         myNode.setValue(data).addOnSuccessListener {
-            Log.d(TAG, "Successfully synced my mood: $emoji to pair $pairingId")
+            Log.d(TAG, "Successfully synced my mood: $emoji ($label) to pair $pairingId")
         }.addOnFailureListener { e ->
             Log.e(TAG, "Failed to sync mood: ${e.message}")
         }
@@ -195,12 +202,14 @@ object FirebaseSyncManager {
         onFriendMoodChangedCallback = null
         hasNotifiedConnected = false
         lastFriendEmoji = null
+        lastFriendLabel = null
     }
 
     /**
      * Called only when the user explicitly taps the Disconnect button.
-     * Sets the offline emoji so the partner knows this device disconnected on purpose,
-     * then cleans up listeners the same way disconnect() does.
+     * Sets the offline emoji (and matching label) so the partner knows this
+     * device disconnected on purpose, then cleans up listeners the same way
+     * disconnect() does.
      */
     fun disconnectManually() {
         val pairingId = activePairingId
@@ -209,6 +218,7 @@ object FirebaseSyncManager {
             myNode.updateChildren(
                 mapOf(
                     "mood" to DISCONNECT_EMOJI,
+                    "label" to DISCONNECT_LABEL,
                     "timestamp" to ServerValue.TIMESTAMP
                 )
             )
