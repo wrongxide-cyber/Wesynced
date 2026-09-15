@@ -30,7 +30,11 @@ class OnboardingActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnTurnOffBatterySaver).setOnClickListener {
             if (BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) {
                 manufacturerScreenAttempted = true
-                BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
+                // If there's nothing to open for this phone, move on right away
+                // instead of waiting for a screen transition that won't happen.
+                if (!BatteryOptimizationHelper.openManufacturerAutostartSettings(this)) {
+                    viewFlipper.showNext()
+                }
             } else {
                 BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(this)
             }
@@ -107,7 +111,11 @@ class OnboardingActivity : AppCompatActivity() {
 
         if (!manufacturerScreenAttempted) {
             manufacturerScreenAttempted = true
-            BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
+            // Same fix here: if nothing opened, don't wait for onResume() to
+            // fire again on its own — it won't, since we never left the app.
+            if (!BatteryOptimizationHelper.openManufacturerAutostartSettings(this)) {
+                viewFlipper.showNext()
+            }
         } else {
             viewFlipper.showNext()
         }
