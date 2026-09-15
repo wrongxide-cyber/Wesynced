@@ -17,10 +17,8 @@ exports.onMoodChanged = functions.database
     const members = membersSnap.val();
     if (!members) return null;
 
-    // The client writes mood + label + timestamp together in one atomic
-    // update, so by the time this trigger fires the sibling "label" value
-    // is already committed and safe to read alongside it.
     const newLabel = members[deviceId]?.label || "";
+    const newTimestamp = members[deviceId]?.timestamp || Date.now();
 
     const sendPromises = [];
     for (const otherDeviceId of Object.keys(members)) {
@@ -31,7 +29,11 @@ exports.onMoodChanged = functions.database
       sendPromises.push(
         admin.messaging().send({
           token,
-          data: { emoji: newMood, label: newLabel },
+          data: {
+            emoji: newMood,
+            label: newLabel,
+            timestamp: String(newTimestamp),
+          },
           android: { priority: "high" },
         }).catch((err) => {
           console.error(`Failed to send to ${otherDeviceId}:`, err);
