@@ -29,8 +29,6 @@ class OnboardingActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.btnTurnOffBatterySaver).setOnClickListener {
             if (BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) {
-                // Standard exemption already granted (maybe from a previous
-                // run) — go straight to the manufacturer-specific screen.
                 manufacturerScreenAttempted = true
                 BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
             } else {
@@ -49,20 +47,51 @@ class OnboardingActivity : AppCompatActivity() {
         setUpLockInstructionsText()
     }
 
+    // Covers every manufacturer meaningfully present worldwide, not just
+    // the handful we started with. Each bucket groups brands that share
+    // the same underlying background-restriction system:
+    //  - Xiaomi/Redmi/POCO all run MIUI or HyperOS.
+    //  - Oppo/Realme/OnePlus/Vivo/iQOO share ColorOS/FuntouchOS-family
+    //    background management, close enough that the same instructions
+    //    and lock gesture apply to all of them.
+    //  - Huawei/Honor share EMUI/Magic UI ancestry.
+    //  - Tecno/Infinix/Itel (Transsion brands) are hugely popular across
+    //    India, Africa, and Southeast Asia and run their own aggressive
+    //    battery management (HiOS/XOS), similar enough to the generic
+    //    "long-press, find the lock icon" instructions to share that copy.
+    //  - Nokia/HMD Global gets its own special case: their restriction is
+    //    a separate timer-based "Battery protection" service, not fixed
+    //    by locking the app in Recents at all.
+    //  - Motorola, Google (Pixel/Android One), and Nothing are treated as
+    //    stock-like and don't need this step.
     private fun setUpLockInstructionsText() {
         val manufacturer = Build.MANUFACTURER.lowercase()
         val stepsTextView = findViewById<TextView>(R.id.tvOnboardingLockSteps)
 
         val stepsText = when {
-            manufacturer.contains("xiaomi") ->
+            manufacturer.contains("xiaomi") || manufacturer.contains("redmi") ||
+                manufacturer.contains("poco") ->
                 getString(R.string.onboarding_slide3_steps_xiaomi)
+
             manufacturer.contains("samsung") ->
                 getString(R.string.onboarding_slide3_steps_samsung)
+
             manufacturer.contains("oppo") || manufacturer.contains("realme") ||
-                manufacturer.contains("vivo") || manufacturer.contains("oneplus") ->
+                manufacturer.contains("vivo") || manufacturer.contains("oneplus") ||
+                manufacturer.contains("iqoo") || manufacturer.contains("huawei") ||
+                manufacturer.contains("honor") || manufacturer.contains("asus") ||
+                manufacturer.contains("lenovo") || manufacturer.contains("meizu") ||
+                manufacturer.contains("zte") || manufacturer.contains("tecno") ||
+                manufacturer.contains("infinix") || manufacturer.contains("itel") ->
                 getString(R.string.onboarding_slide3_steps_coloros)
-            manufacturer.contains("motorola") || manufacturer.contains("google") ->
+
+            manufacturer.contains("hmd") || manufacturer.contains("nokia") ->
+                getString(R.string.onboarding_slide3_steps_nokia)
+
+            manufacturer.contains("motorola") || manufacturer.contains("google") ||
+                manufacturer.contains("nothing") ->
                 getString(R.string.onboarding_slide3_steps_stock)
+
             else ->
                 getString(R.string.onboarding_slide3_steps_default)
         }
@@ -76,15 +105,9 @@ class OnboardingActivity : AppCompatActivity() {
         if (viewFlipper.displayedChild != 1) return
         if (!BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) return
 
-        // Standard exemption is granted. Before moving on, make sure we've
-        // also given the manufacturer-specific screen (MIUI Autostart, etc.)
-        // a chance — this is the step that actually matters on most OEM
-        // phones, and it must not be skipped just because step 1 succeeded.
         if (!manufacturerScreenAttempted) {
             manufacturerScreenAttempted = true
             BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
-            // Whether or not a matching screen opened, move on to the lock
-            // instructions slide next — this now always follows step 2.
         } else {
             viewFlipper.showNext()
         }
