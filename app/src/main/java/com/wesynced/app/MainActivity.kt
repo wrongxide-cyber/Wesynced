@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnConnect.setOnClickListener {
             val pairingId = binding.etPairingId.text?.toString()?.trim()?.uppercase()
             if (!pairingId.isNullOrEmpty()) {
-                connectToPair(pairingId)
+                connectToPair(pairingId, isManualConnect = true)
             } else {
                 binding.tilPairingId.error = getString(R.string.error_enter_pairing_id)
             }
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             binding.tilPairingId.error = null
         }
 
-        binding.btnDisconnect.setOnClickListener {
+        binding.cardDisconnect.setOnClickListener {
             handleDisconnect()
         }
     }
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.cardConnectionBadge.visibility = View.GONE
         binding.cardPartnerStatus.visibility = View.GONE
-        binding.btnDisconnect.visibility = View.GONE
+        binding.cardDisconnect.visibility = View.GONE
         binding.btnConnect.isEnabled = true
         binding.btnConnect.text = getString(R.string.btn_connect)
 
@@ -138,11 +138,11 @@ class MainActivity : AppCompatActivity() {
 
         if (!savedId.isNullOrEmpty()) {
             binding.etPairingId.setText(savedId)
-            connectToPair(savedId)
+            connectToPair(savedId, isManualConnect = false)
         }
     }
 
-    private fun connectToPair(pairingId: String) {
+    private fun connectToPair(pairingId: String, isManualConnect: Boolean) {
         binding.tilPairingId.error = null
         binding.btnConnect.isEnabled = false
         binding.btnConnect.text = "Connecting..."
@@ -167,9 +167,8 @@ class MainActivity : AppCompatActivity() {
                         binding.tvConnectionBadge.text = "Synced: $pairingId"
                         binding.cardConnectionBadge.visibility = View.VISIBLE
                         binding.cardPartnerStatus.visibility = View.VISIBLE
-                        binding.btnDisconnect.visibility = View.VISIBLE
+                        binding.cardDisconnect.visibility = View.VISIBLE
 
-                        Toast.makeText(this, "Connected with partner! 🌸", Toast.LENGTH_SHORT).show()
                         FirebaseSyncManager.updateMyMood(selectedMoodEmoji)
 
                         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
@@ -179,8 +178,14 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
                         }
+
+                        if (isManualConnect) {
+                            Toast.makeText(this, "Connected with partner! 🌸", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                        if (isManualConnect) {
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
