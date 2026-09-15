@@ -2,8 +2,8 @@
 <resources>
     <style name="Theme.WeSynced.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/pastel_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/pastel_lavender_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_inset</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/pastel_rose_soft</item>
         <item name="postSplashScreenTheme">@style/Theme.WeSynced</item>
     </style>
 </resources>
