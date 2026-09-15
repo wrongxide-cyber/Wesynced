@@ -50,6 +50,9 @@ class MoodWidgetProvider : AppWidgetProvider() {
             for (appWidgetId in appWidgetIds) {
                 updateAppWidget(context, appWidgetManager, appWidgetId, friendEmoji, friendLabel.ifBlank { DEFAULT_LABEL })
             }
+
+            // Keep the app-icon-sized widget in sync too.
+            MoodWidgetProviderSmall.refreshWidgets(context, friendEmoji)
         }
 
         private fun updateAppWidget(
