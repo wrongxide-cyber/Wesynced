@@ -2,10 +2,13 @@ package com.wesynced.app
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.appwidget.AppWidgetManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -186,6 +189,7 @@ class MainActivity : AppCompatActivity() {
 
                         if (isManualConnect) {
                             Toast.makeText(this, "Connected with partner! 🌸", Toast.LENGTH_SHORT).show()
+                            maybePromptAddWidget()
                         }
                     } else {
                         if (isManualConnect) {
@@ -195,6 +199,43 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    /**
+     * Shown exactly once, right after the very first successful manual
+     * pairing, inviting the user to pin the home screen widget — and
+     * pulling up the OS "add widget" flow directly instead of making
+     * them dig through their launcher's widget picker.
+     */
+    private fun maybePromptAddWidget() {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (prefs.getBoolean(KEY_WIDGET_PROMPT_SHOWN, false)) return
+        prefs.edit().putBoolean(KEY_WIDGET_PROMPT_SHOWN, true).apply()
+
+        val appWidgetManager = AppWidgetManager.getInstance(this)
+        val componentName = ComponentName(this, MoodWidgetProvider::class.java)
+
+        // Don't nag if they've already added it some other way.
+        if (appWidgetManager.getAppWidgetIds(componentName).isNotEmpty()) return
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.widget_prompt_title))
+            .setMessage(getString(R.string.widget_prompt_message))
+            .setPositiveButton(getString(R.string.widget_prompt_positive)) { _, _ ->
+                requestPinWidget(appWidgetManager, componentName)
+            }
+            .setNegativeButton(getString(R.string.widget_prompt_negative), null)
+            .show()
+    }
+
+    private fun requestPinWidget(appWidgetManager: AppWidgetManager, componentName: ComponentName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && appWidgetManager.isRequestPinAppWidgetSupported) {
+            appWidgetManager.requestPinAppWidget(componentName, null, null)
+        } else {
+            // Older Android or a launcher that doesn't support the pin flow —
+            // there's no programmatic fallback, so just point them to it.
+            Toast.makeText(this, getString(R.string.widget_prompt_manual_fallback), Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupEmojiClickListeners() {
@@ -282,7 +323,13 @@ class MainActivity : AppCompatActivity() {
         textView.text = emoji
 
         card.setOnClickListener {
-            onMoodSelected(emoji, card)
+            if (selectedMoodEmoji == emoji) {
+                // Tapping a custom slot that's already your current mood does
+                // nothing useful — nudge them toward the edit gesture instead.
+                Toast.makeText(this, getString(R.string.custom_mood_tap_hold_hint), Toast.LENGTH_SHORT).show()
+            } else {
+                onMoodSelected(emoji, card)
+            }
         }
     }
 
@@ -349,5 +396,6 @@ class MainActivity : AppCompatActivity() {
         const val PREFS_NAME = "wesynced_prefs"
         const val KEY_SAVED_PAIRING_ID = "saved_pairing_id"
         const val KEY_MY_MOOD = "saved_my_mood"
+        const val KEY_WIDGET_PROMPT_SHOWN = "widget_prompt_shown"
     }
 }
