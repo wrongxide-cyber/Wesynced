@@ -103,4 +103,68 @@
 
     </LinearLayout>
 
+    <!-- Slide 3: lock instructions -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔒"
+                android:textSize="68sp"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_slide3_title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_slide3_intro"
+                android:textSize="15sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:id="@+id/tvOnboardingLockSteps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/card_surface"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:layout_marginBottom="32dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOnboardingLockDone"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_slide3_button"
+                android:textSize="15sp"
+                android:backgroundTint="@color/pastel_purple"
+                android:textColor="@android:color/white"
+                app:cornerRadius="14dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </ViewFlipper>
