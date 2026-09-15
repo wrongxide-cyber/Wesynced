@@ -15,10 +15,10 @@ import android.util.Log
  * stays reliable. Two separate steps, kept separate on purpose:
  *  1. The standard Android "ignore battery optimizations" dialog.
  *  2. A best-effort, manufacturer-specific autostart/background screen for
- *     brands (Xiaomi, Oppo, Vivo, Huawei, OnePlus) that apply their OWN
- *     background-kill rules on top of stock Android — granting step 1 alone
- *     does NOT satisfy these, which is why they're kept as two explicit steps
- *     instead of auto-chaining one into the other.
+ *     brands (Xiaomi, Oppo, Realme, Vivo, Huawei, OnePlus) that apply their
+ *     OWN background-kill rules on top of stock Android — granting step 1
+ *     alone does NOT satisfy these, which is why they're kept as two
+ *     explicit steps instead of auto-chaining one into the other.
  */
 object BatteryOptimizationHelper {
 
@@ -52,6 +52,8 @@ object BatteryOptimizationHelper {
      * Returns true if a matching screen was found and launched (caller should
      * expect onResume() to fire again when the user comes back), or false if
      * there was nothing to open for this device (caller can proceed immediately).
+     * Motorola isn't listed here on purpose — it's close to stock Android and
+     * has no separate autostart screen, so it correctly falls through to null.
      */
     fun openManufacturerAutostartSettings(context: Context): Boolean {
         val manufacturer = Build.MANUFACTURER.lowercase()
@@ -63,7 +65,11 @@ object BatteryOptimizationHelper {
                     "com.miui.permcenter.autostart.AutoStartManagementActivity"
                 )
             }
-            manufacturer.contains("oppo") -> Intent().apply {
+            // Realme UI shares ColorOS lineage with Oppo, so the same
+            // screen is worth trying here too — it's best-effort and
+            // silently no-ops below if it doesn't exist on a given
+            // Realme software version.
+            manufacturer.contains("oppo") || manufacturer.contains("realme") -> Intent().apply {
                 component = ComponentName(
                     "com.coloros.safecenter",
                     "com.coloros.safecenter.permission.startup.StartupAppListActivity"
