@@ -11,6 +11,10 @@ class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var viewFlipper: ViewFlipper
 
+    // Tracks whether we've already tried opening the manufacturer-specific
+    // autostart screen this onboarding session, so we don't loop on it.
+    private var manufacturerScreenAttempted = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
@@ -22,7 +26,16 @@ class OnboardingActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.btnTurnOffBatterySaver).setOnClickListener {
-            BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(this)
+            if (BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) {
+                // Standard exemption already granted (maybe from a previous
+                // run) — go straight to the manufacturer-specific screen.
+                manufacturerScreenAttempted = true
+                if (!BatteryOptimizationHelper.openManufacturerAutostartSettings(this)) {
+                    finishOnboarding()
+                }
+            } else {
+                BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(this)
+            }
         }
 
         findViewById<View>(R.id.btnOnboardingSkip).setOnClickListener {
@@ -32,11 +45,24 @@ class OnboardingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // If we're on slide 2 and the exemption was just granted
-        // (user came back from the system dialog), move on automatically.
-        if (viewFlipper.displayedChild == 1 &&
-            BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)
-        ) {
+
+        if (viewFlipper.displayedChild != 1) return
+        if (!BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) return
+
+        // Standard exemption is granted. Before moving on, make sure we've
+        // also given the manufacturer-specific screen (MIUI Autostart, etc.)
+        // a chance — this is the step that actually matters on most OEM
+        // phones, and it must not be skipped just because step 1 succeeded.
+        if (!manufacturerScreenAttempted) {
+            manufacturerScreenAttempted = true
+            val opened = BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
+            if (!opened) {
+                // Nothing to open for this device — nothing left to wait for.
+                finishOnboarding()
+            }
+            // else: the OEM screen just opened; onResume() will fire again
+            // when the user comes back, and the branch below will run then.
+        } else {
             finishOnboarding()
         }
     }
