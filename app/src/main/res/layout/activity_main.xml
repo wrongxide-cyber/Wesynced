@@ -25,7 +25,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- App Header -->
+                <!-- App Header: Hamburger + branding -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,75 +65,44 @@
                             android:text="@string/app_tagline"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary" />
-
                     </LinearLayout>
 
-                    <!-- Compact connection controls -->
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDisconnect"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal">
+                        android:visibility="gone"
+                        android:text="@string/btn_disconnect"
+                        android:textSize="12sp"
+                        android:textColor="@color/pastel_purple_dark"
+                        tools:visibility="visible" />
 
-                        <!-- Synced capsule -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardConnectionBadge"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardConnectionBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/pastel_mint"
+                        app:strokeWidth="0dp"
+                        tools:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/tvConnectionBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            app:cardCornerRadius="9dp"
-                            app:cardElevation="0dp"
-                            app:cardBackgroundColor="@color/pastel_mint"
-                            app:strokeWidth="0dp"
-                            tools:visibility="visible">
-
-                            <TextView
-                                android:id="@+id/tvConnectionBadge"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingStart="7dp"
-                                android:paddingEnd="7dp"
-                                android:paddingTop="3dp"
-                                android:paddingBottom="3dp"
-                                android:text="Synced"
-                                android:textSize="9sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/mint_dark" />
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <!-- Disconnect capsule -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/btnDisconnect"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:visibility="gone"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:foreground="?attr/selectableItemBackground"
-                            app:cardCornerRadius="9dp"
-                            app:cardElevation="0dp"
-                            app:cardBackgroundColor="#E53935"
-                            app:strokeWidth="0dp"
-                            tools:visibility="visible">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingStart="7dp"
-                                android:paddingEnd="7dp"
-                                android:paddingTop="3dp"
-                                android:paddingBottom="3dp"
-                                android:text="@string/btn_disconnect"
-                                android:textSize="9sp"
-                                android:textStyle="bold"
-                                android:textColor="@android:color/white" />
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                    </LinearLayout>
-
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:paddingTop="6dp"
+                            android:paddingBottom="6dp"
+                            android:text="Synced"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/mint_dark" />
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
                 <!-- Pairing Card -->
@@ -189,7 +158,6 @@
                                     android:maxLength="16"
                                     android:fontFamily="monospace"
                                     android:textSize="15sp" />
-
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.button.MaterialButton
@@ -202,7 +170,6 @@
                                 android:backgroundTint="@color/pastel_purple"
                                 android:textColor="@android:color/white"
                                 app:cornerRadius="14dp" />
-
                         </LinearLayout>
 
                         <LinearLayout
@@ -228,187 +195,138 @@
                                 android:text="@string/btn_copy_id"
                                 android:textSize="12sp"
                                 android:textColor="@color/pastel_purple_dark" />
-
                         </LinearLayout>
 
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- My Current Mood + Partner Mood -->
-                <LinearLayout
+                <!-- Large Live Mood Preview Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardLivePreviewContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="top"
-                    android:layout_marginBottom="22dp">
+                    android:layout_marginBottom="22dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/card_surface"
+                    app:strokeWidth="0dp">
 
-                    <!-- My Current Mood -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardLivePreviewContainer"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="0dp"
-                        app:cardCornerRadius="28dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/card_surface"
-                        app:strokeWidth="0dp">
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="24dp">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
+                            android:text="@string/my_current_mood"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginBottom="12dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            app:cardCornerRadius="60dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="@color/pastel_peach_light"
+                            app:strokeWidth="0dp">
+
+                            <TextView
+                                android:id="@+id/tvLivePreviewEmoji"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="♥️"
+                                android:textSize="64sp" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:id="@+id/tvLivePreviewLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Safe and Sound"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="12dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hint_tap_to_change"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginTop="4dp" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Paired Partner Live Mood Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPartnerStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="22dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="26dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/pastel_lavender_light"
+                    app:strokeWidth="0dp"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvFriendEmoji"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:gravity="center"
-                            android:padding="20dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/my_current_mood"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginBottom="10dp" />
-
-                            <!-- Ripple area -->
-                            <FrameLayout
-                                android:layout_width="140dp"
-                                android:layout_height="140dp">
-
-                                <!-- Outer ripple -->
-                                <View
-                                    android:id="@+id/viewMoodRippleOuter"
-                                    android:layout_width="140dp"
-                                    android:layout_height="140dp"
-                                    android:layout_gravity="center"
-                                    android:background="@drawable/mood_ripple_circle"
-                                    android:alpha="0.0" />
-
-                                <!-- Inner ripple -->
-                                <View
-                                    android:id="@+id/viewMoodRippleInner"
-                                    android:layout_width="140dp"
-                                    android:layout_height="140dp"
-                                    android:layout_gravity="center"
-                                    android:background="@drawable/mood_ripple_circle"
-                                    android:alpha="0.0" />
-
-                                <!-- Emoji -->
-                                <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="120dp"
-                                    android:layout_height="120dp"
-                                    android:layout_gravity="center"
-                                    app:cardCornerRadius="60dp"
-                                    app:cardElevation="0dp"
-                                    app:cardBackgroundColor="@color/pastel_peach_light"
-                                    app:strokeWidth="0dp">
-
-                                    <TextView
-                                        android:id="@+id/tvLivePreviewEmoji"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:gravity="center"
-                                        android:text="♥️"
-                                        android:textSize="64sp" />
-
-                                </com.google.android.material.card.MaterialCardView>
-
-                            </FrameLayout>
-
-                            <TextView
-                                android:id="@+id/tvLivePreviewLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Safe and Sound"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="8dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/hint_tap_to_change"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="4dp" />
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Partner Mood -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardPartnerStatus"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        android:visibility="gone"
-                        app:cardCornerRadius="28dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/pastel_lavender_light"
-                        app:strokeWidth="0dp"
-                        tools:visibility="visible">
+                            android:text="♥️"
+                            android:textSize="36sp" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="20dp">
+                            android:layout_marginStart="12dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/partner_mood_title"
-                                android:textSize="14sp"
+                                android:textSize="15sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginBottom="10dp" />
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:layout_width="120dp"
-                                android:layout_height="120dp"
-                                app:cardCornerRadius="60dp"
-                                app:cardElevation="0dp"
-                                app:cardBackgroundColor="@color/card_surface"
-                                app:strokeWidth="0dp">
-
-                                <TextView
-                                    android:id="@+id/tvFriendEmoji"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="♥️"
-                                    android:textSize="64sp" />
-
-                            </com.google.android.material.card.MaterialCardView>
+                                android:textColor="@color/text_primary" />
 
                             <TextView
                                 android:id="@+id/tvFriendStatus"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Safe and Sound"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="8dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="⚡ Live Sync"
-                                android:textSize="12sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/pastel_purple_dark"
-                                android:layout_marginTop="4dp" />
-
+                                android:textSize="13sp"
+                                android:textColor="@color/text_secondary" />
                         </LinearLayout>
 
-                    </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⚡ Live Sync"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/pastel_purple_dark" />
 
-                </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Mood Selection Card -->
                 <com.google.android.material.card.MaterialCardView
@@ -462,7 +380,6 @@
                                     android:gravity="center"
                                     android:text="♥️"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -484,7 +401,6 @@
                                     android:gravity="center"
                                     android:text="🥺"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -506,7 +422,6 @@
                                     android:gravity="center"
                                     android:text="🙄"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -528,9 +443,7 @@
                                     android:gravity="center"
                                     android:text="😞"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
-
                         </LinearLayout>
 
                         <!-- Row 2 -->
@@ -559,7 +472,6 @@
                                     android:gravity="center"
                                     android:text="🫩"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -581,7 +493,6 @@
                                     android:gravity="center"
                                     android:text="🫦"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -603,7 +514,6 @@
                                     android:gravity="center"
                                     android:text="💀"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -625,17 +535,13 @@
                                     android:gravity="center"
                                     android:text="😕"
                                     android:textSize="32sp" />
-
                             </com.google.android.material.card.MaterialCardView>
-
                         </LinearLayout>
 
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
         </androidx.core.widget.NestedScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
