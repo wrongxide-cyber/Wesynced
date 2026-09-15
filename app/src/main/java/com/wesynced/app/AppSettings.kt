@@ -5,7 +5,8 @@ import androidx.appcompat.app.AppCompatDelegate
 
 /**
  * Centralized storage and application of user-configurable settings:
- * theme mode (light/dark) and sync interval preference.
+ * theme mode (light/dark), sync interval preference, and the 4
+ * user-defined custom mood slots (emoji + name each).
  *
  * NOTE: sync interval is currently only STORED here — FirebaseSyncManager still
  * syncs live/instantly regardless of this value. Actual periodic-sync behavior
@@ -16,6 +17,8 @@ object AppSettings {
     private const val PREFS_NAME = "wesynced_settings"
     private const val KEY_THEME_MODE = "theme_mode"
     private const val KEY_SYNC_INTERVAL_MINUTES = "sync_interval_minutes"
+    private const val KEY_CUSTOM_MOOD_EMOJI_PREFIX = "custom_mood_emoji_"
+    private const val KEY_CUSTOM_MOOD_LABEL_PREFIX = "custom_mood_label_"
 
     const val THEME_LIGHT = "light"
     const val THEME_DARK = "dark"
@@ -57,6 +60,24 @@ object AppSettings {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putInt(KEY_SYNC_INTERVAL_MINUTES, minutes)
+            .apply()
+    }
+
+    fun getCustomMoodEmoji(context: Context, slotIndex: Int): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_CUSTOM_MOOD_EMOJI_PREFIX + slotIndex, null)
+    }
+
+    fun getCustomMoodLabel(context: Context, slotIndex: Int): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_CUSTOM_MOOD_LABEL_PREFIX + slotIndex, null)
+    }
+
+    fun setCustomMood(context: Context, slotIndex: Int, emoji: String, label: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_CUSTOM_MOOD_EMOJI_PREFIX + slotIndex, emoji)
+            .putString(KEY_CUSTOM_MOOD_LABEL_PREFIX + slotIndex, label)
             .apply()
     }
 }
