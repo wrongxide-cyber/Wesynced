@@ -13,8 +13,8 @@ import android.os.VibratorManager
  */
 object HapticHelper {
 
-    private const val DURATION_MS = 25L
-    private const val AMPLITUDE = 60 // out of 255 — deliberately soft, not a full buzz
+    private const val DURATION_MS = 70L
+    private const val AMPLITUDE = 110 // out of 255 — still soft, but actually perceptible now
 
     fun triggerCalmPulse(context: Context) {
         val vibrator = getVibrator(context) ?: return
