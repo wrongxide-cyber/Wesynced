@@ -67,7 +67,6 @@
                             android:textColor="@color/text_secondary" />
                     </LinearLayout>
 
-                    <!-- Synced capsule stacked above Disconnect capsule -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -474,7 +473,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:weightSum="4">
+                            android:weightSum="4"
+                            android:layout_marginBottom="8dp">
 
                             <com.google.android.material.card.MaterialCardView
                                 android:id="@+id/btnMoodHeart"
@@ -558,6 +558,102 @@
                                     android:gravity="center"
                                     android:text="😕"
                                     android:textSize="32sp" />
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                        <!-- Row 3: 4 custom user-defined slots -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="4">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnMoodCustom1"
+                                android:layout_width="0dp"
+                                android:layout_height="72dp"
+                                android:layout_weight="1"
+                                android:layout_margin="4dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
+                                app:strokeWidth="0dp">
+
+                                <TextView
+                                    android:id="@+id/tvCustomEmoji1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="@string/custom_mood_placeholder"
+                                    android:textSize="28sp" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnMoodCustom2"
+                                android:layout_width="0dp"
+                                android:layout_height="72dp"
+                                android:layout_weight="1"
+                                android:layout_margin="4dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
+                                app:strokeWidth="0dp">
+
+                                <TextView
+                                    android:id="@+id/tvCustomEmoji2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="@string/custom_mood_placeholder"
+                                    android:textSize="28sp" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnMoodCustom3"
+                                android:layout_width="0dp"
+                                android:layout_height="72dp"
+                                android:layout_weight="1"
+                                android:layout_margin="4dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
+                                app:strokeWidth="0dp">
+
+                                <TextView
+                                    android:id="@+id/tvCustomEmoji3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="@string/custom_mood_placeholder"
+                                    android:textSize="28sp" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/btnMoodCustom4"
+                                android:layout_width="0dp"
+                                android:layout_height="72dp"
+                                android:layout_weight="1"
+                                android:layout_margin="4dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="18dp"
+                                app:cardElevation="0dp"
+                                app:cardBackgroundColor="@color/pastel_lavender_soft"
+                                app:strokeWidth="0dp">
+
+                                <TextView
+                                    android:id="@+id/tvCustomEmoji4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="@string/custom_mood_placeholder"
+                                    android:textSize="28sp" />
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
 
