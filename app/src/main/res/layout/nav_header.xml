@@ -3,10 +3,14 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="wrap_content"
+    android:minHeight="140dp"
     android:orientation="vertical"
     android:gravity="bottom"
-    android:padding="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="20dp"
     android:background="@color/pastel_purple">
 
     <TextView
