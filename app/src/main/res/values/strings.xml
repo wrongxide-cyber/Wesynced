@@ -59,6 +59,7 @@
     <string name="onboarding_slide3_steps_samsung">Open Recent Apps, tap our app\'s icon at the top of the card, then tap \"Lock this app\" 🔒</string>
     <string name="onboarding_slide3_steps_coloros">Open Recent Apps, long-press our card, then tap the lock icon that pops up 🔒</string>
     <string name="onboarding_slide3_steps_stock">Good news — your phone doesn\'t usually need this step. You\'re already set! 🎉</string>
+    <string name="onboarding_slide3_steps_nokia">Your phone has a setting called \"Battery protection\" that can pause background apps on a timer, separately from the usual battery settings. Go to Settings, search for \"Battery protection,\" and turn it off (or add WeSynced to its exceptions if that option appears) 🔋</string>
     <string name="onboarding_slide3_button">Got it, I\'ll do this now</string>
 
     <string name="custom_mood_placeholder">➕</string>
