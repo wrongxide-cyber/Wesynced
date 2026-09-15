@@ -18,6 +18,7 @@ class WeSyncedMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         val emoji = remoteMessage.data["emoji"] ?: return
-        MoodWidgetProvider.updateFriendMood(applicationContext, emoji)
+        val label = remoteMessage.data["label"] ?: ""
+        MoodWidgetProvider.updateFriendMood(applicationContext, emoji, label)
     }
 }
