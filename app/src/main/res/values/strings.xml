@@ -69,4 +69,5 @@
     <string name="qs_tile_not_connected">Not connected</string>
 
     <string name="custom_mood_tap_hold_hint">Already your mood — tap and hold to edit</string>
+    <string name="widget_small_name">WeSynced Mood (Compact)</string>
 </resources>
