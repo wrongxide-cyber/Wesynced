@@ -2,8 +2,10 @@ package com.wesynced.app
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.appcompat.app.AppCompatActivity
 
@@ -30,9 +32,7 @@ class OnboardingActivity : AppCompatActivity() {
                 // Standard exemption already granted (maybe from a previous
                 // run) — go straight to the manufacturer-specific screen.
                 manufacturerScreenAttempted = true
-                if (!BatteryOptimizationHelper.openManufacturerAutostartSettings(this)) {
-                    finishOnboarding()
-                }
+                BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
             } else {
                 BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(this)
             }
@@ -41,6 +41,33 @@ class OnboardingActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnOnboardingSkip).setOnClickListener {
             finishOnboarding()
         }
+
+        findViewById<View>(R.id.btnOnboardingLockDone).setOnClickListener {
+            finishOnboarding()
+        }
+
+        setUpLockInstructionsText()
+    }
+
+    private fun setUpLockInstructionsText() {
+        val manufacturer = Build.MANUFACTURER.lowercase()
+        val stepsTextView = findViewById<TextView>(R.id.tvOnboardingLockSteps)
+
+        val stepsText = when {
+            manufacturer.contains("xiaomi") ->
+                getString(R.string.onboarding_slide3_steps_xiaomi)
+            manufacturer.contains("samsung") ->
+                getString(R.string.onboarding_slide3_steps_samsung)
+            manufacturer.contains("oppo") || manufacturer.contains("realme") ||
+                manufacturer.contains("vivo") || manufacturer.contains("oneplus") ->
+                getString(R.string.onboarding_slide3_steps_coloros)
+            manufacturer.contains("motorola") || manufacturer.contains("google") ->
+                getString(R.string.onboarding_slide3_steps_stock)
+            else ->
+                getString(R.string.onboarding_slide3_steps_default)
+        }
+
+        stepsTextView.text = stepsText
     }
 
     override fun onResume() {
@@ -55,15 +82,11 @@ class OnboardingActivity : AppCompatActivity() {
         // phones, and it must not be skipped just because step 1 succeeded.
         if (!manufacturerScreenAttempted) {
             manufacturerScreenAttempted = true
-            val opened = BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
-            if (!opened) {
-                // Nothing to open for this device — nothing left to wait for.
-                finishOnboarding()
-            }
-            // else: the OEM screen just opened; onResume() will fire again
-            // when the user comes back, and the branch below will run then.
+            BatteryOptimizationHelper.openManufacturerAutostartSettings(this)
+            // Whether or not a matching screen opened, move on to the lock
+            // instructions slide next — this now always follows step 2.
         } else {
-            finishOnboarding()
+            viewFlipper.showNext()
         }
     }
 
