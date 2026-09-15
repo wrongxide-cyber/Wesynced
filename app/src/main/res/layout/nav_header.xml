@@ -2,28 +2,30 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/navHeaderRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="140dp"
     android:orientation="vertical"
     android:gravity="bottom"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
     android:paddingTop="16dp"
-    android:paddingBottom="20dp"
+    android:paddingBottom="22dp"
     android:background="@color/pastel_purple">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textSize="25sp"
+        android:textSize="34sp"
         android:textStyle="bold"
         android:textColor="@android:color/white" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:text="@string/app_tagline"
         android:textSize="15sp"
         android:textColor="@android:color/white" />
