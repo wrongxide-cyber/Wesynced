@@ -154,10 +154,10 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseSyncManager.connect(
             pairingId = pairingId,
-            onFriendMoodChanged = { friendEmoji, _ ->
+            onFriendMoodChanged = { friendEmoji, friendLabel, _ ->
                 runOnUiThread {
-                    displayFriendMood(friendEmoji)
-                    MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji)
+                    displayFriendMood(friendEmoji, friendLabel)
+                    MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji, friendLabel)
                 }
             },
             onStatusChanged = { isConnected, message ->
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                         binding.cardPartnerStatus.visibility = View.VISIBLE
                         binding.cardDisconnect.visibility = View.VISIBLE
 
-                        FirebaseSyncManager.updateMyMood(selectedMoodEmoji)
+                        FirebaseSyncManager.updateMyMood(selectedMoodEmoji, moodCatalogue[selectedMoodEmoji].orEmpty())
 
                         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                             if (task.isSuccessful) {
@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
             .apply()
 
         if (currentPairingId != null) {
-            FirebaseSyncManager.updateMyMood(emoji)
+            FirebaseSyncManager.updateMyMood(emoji, moodCatalogue[emoji].orEmpty())
         } else {
             Toast.makeText(this, "Connect with a Pairing ID to share live!", Toast.LENGTH_SHORT).show()
         }
@@ -313,10 +313,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayFriendMood(friendEmoji: String) {
+    private fun displayFriendMood(friendEmoji: String, friendLabel: String = "") {
         binding.tvFriendEmoji.text = friendEmoji
-        binding.tvFriendStatus.text =
+        binding.tvFriendStatus.text = friendLabel.ifBlank {
             moodCatalogue[friendEmoji] ?: getString(R.string.custom_mood_fallback_label)
+        }
         bounceView(binding.cardPartnerStatus)
     }
 
