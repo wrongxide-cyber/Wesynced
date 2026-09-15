@@ -10,6 +10,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
@@ -29,6 +31,17 @@ class MainActivity : AppCompatActivity() {
     private var currentPairingId: String? = null
     private var selectedMoodEmoji: String = "♥️"
     private lateinit var customSlotViews: List<Pair<MaterialCardView, TextView>>
+
+    private var isAppInForeground = false
+    private var friendLastUpdateMillis: Long = 0L
+
+    private val timeUpdateHandler = Handler(Looper.getMainLooper())
+    private val timeUpdateRunnable = object : Runnable {
+        override fun run() {
+            refreshFriendLastUpdatedText()
+            timeUpdateHandler.postDelayed(this, 60_000L)
+        }
+    }
 
     private val moodCatalogue = mutableMapOf(
         "♥️" to "Safe and Sound",
@@ -62,6 +75,20 @@ class MainActivity : AppCompatActivity() {
         loadSavedPreferences()
         setupEmojiClickListeners()
         setupCustomMoodSlots()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isAppInForeground = true
+        if (::binding.isInitialized) {
+            timeUpdateHandler.post(timeUpdateRunnable)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isAppInForeground = false
+        timeUpdateHandler.removeCallbacks(timeUpdateRunnable)
     }
 
     private fun setupNavigationDrawer() {
@@ -127,8 +154,11 @@ class MainActivity : AppCompatActivity() {
         binding.cardConnectionBadge.visibility = View.GONE
         binding.cardPartnerStatus.visibility = View.GONE
         binding.cardDisconnect.visibility = View.GONE
+        binding.cardPairing.visibility = View.VISIBLE
         binding.btnConnect.isEnabled = true
         binding.btnConnect.text = getString(R.string.btn_connect)
+
+        friendLastUpdateMillis = 0L
 
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
@@ -159,10 +189,10 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseSyncManager.connect(
             pairingId = pairingId,
-            onFriendMoodChanged = { friendEmoji, friendLabel, _ ->
+            onFriendMoodChanged = { friendEmoji, friendLabel, timestamp ->
                 runOnUiThread {
-                    displayFriendMood(friendEmoji, friendLabel)
-                    MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji, friendLabel)
+                    displayFriendMood(friendEmoji, friendLabel, timestamp)
+                    MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji, friendLabel, timestamp)
                 }
             },
             onStatusChanged = { isConnected, message ->
@@ -178,6 +208,7 @@ class MainActivity : AppCompatActivity() {
                         binding.cardConnectionBadge.visibility = View.VISIBLE
                         binding.cardPartnerStatus.visibility = View.VISIBLE
                         binding.cardDisconnect.visibility = View.VISIBLE
+                        binding.cardPairing.visibility = View.GONE
 
                         FirebaseSyncManager.updateMyMood(selectedMoodEmoji, moodCatalogue[selectedMoodEmoji].orEmpty())
 
@@ -325,6 +356,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onMoodSelected(emoji: String, clickedCard: MaterialCardView) {
+        HapticHelper.triggerCalmPulse(this)
+
         selectedMoodEmoji = emoji
         bounceView(clickedCard)
         updateLivePreview(emoji, animate = true)
@@ -351,12 +384,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayFriendMood(friendEmoji: String, friendLabel: String = "") {
+    private fun displayFriendMood(friendEmoji: String, friendLabel: String, timestampMillis: Long) {
         binding.tvFriendEmoji.text = friendEmoji
         binding.tvFriendStatus.text = friendLabel.ifBlank {
             moodCatalogue[friendEmoji] ?: getString(R.string.custom_mood_fallback_label)
         }
+
+        friendLastUpdateMillis = timestampMillis
+        refreshFriendLastUpdatedText()
+
         bounceView(binding.cardPartnerStatus)
+
+        if (isAppInForeground) {
+            HapticHelper.triggerCalmPulse(this)
+        }
+    }
+
+    private fun refreshFriendLastUpdatedText() {
+        if (!::binding.isInitialized || friendLastUpdateMillis <= 0L) return
+        binding.tvFriendLastUpdated.text = formatRelativeTime(friendLastUpdateMillis)
+    }
+
+    private fun formatRelativeTime(timestampMillis: Long): String {
+        val diffMs = (System.currentTimeMillis() - timestampMillis).coerceAtLeast(0L)
+        val minutes = diffMs / 60_000
+        val hours = minutes / 60
+        val days = hours / 24
+
+        return when {
+            minutes < 1 -> getString(R.string.updated_just_now)
+            minutes < 60 -> getString(R.string.updated_minutes_ago, minutes)
+            hours < 24 -> getString(R.string.updated_hours_ago, hours)
+            else -> getString(R.string.updated_days_ago, days)
+        }
     }
 
     private fun bounceView(view: View) {
