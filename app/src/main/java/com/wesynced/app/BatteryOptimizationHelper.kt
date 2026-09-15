@@ -12,11 +12,13 @@ import android.util.Log
 
 /**
  * Requests exemption from battery optimization so background FCM delivery
- * stays reliable. Uses the standard Android system dialog first, then
- * attempts a best-effort, manufacturer-specific fallback screen for brands
- * known to apply extra background restrictions beyond stock Android.
- * These vendor screens are unofficial and may not exist on every
- * device/OS version — if one fails to open, it's silently skipped.
+ * stays reliable. Two separate steps, kept separate on purpose:
+ *  1. The standard Android "ignore battery optimizations" dialog.
+ *  2. A best-effort, manufacturer-specific autostart/background screen for
+ *     brands (Xiaomi, Oppo, Vivo, Huawei, OnePlus) that apply their OWN
+ *     background-kill rules on top of stock Android — granting step 1 alone
+ *     does NOT satisfy these, which is why they're kept as two explicit steps
+ *     instead of auto-chaining one into the other.
  */
 object BatteryOptimizationHelper {
 
@@ -27,13 +29,9 @@ object BatteryOptimizationHelper {
         return powerManager.isIgnoringBatteryOptimizations(context.packageName)
     }
 
+    /** Step 1: the standard Android system dialog only. */
     @SuppressLint("BatteryLife")
     fun requestIgnoreBatteryOptimizations(context: Context) {
-        if (isIgnoringBatteryOptimizations(context)) {
-            tryManufacturerSpecificSettings(context)
-            return
-        }
-
         try {
             val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
                 data = Uri.parse("package:${context.packageName}")
@@ -49,7 +47,13 @@ object BatteryOptimizationHelper {
         }
     }
 
-    private fun tryManufacturerSpecificSettings(context: Context) {
+    /**
+     * Step 2: tries to open the OEM's own autostart/background-permission screen.
+     * Returns true if a matching screen was found and launched (caller should
+     * expect onResume() to fire again when the user comes back), or false if
+     * there was nothing to open for this device (caller can proceed immediately).
+     */
+    fun openManufacturerAutostartSettings(context: Context): Boolean {
         val manufacturer = Build.MANUFACTURER.lowercase()
 
         val intent = when {
@@ -90,12 +94,14 @@ object BatteryOptimizationHelper {
             else -> null
         }
 
-        if (intent != null) {
-            try {
-                context.startActivity(intent)
-            } catch (e: Exception) {
-                Log.d(TAG, "No vendor-specific battery screen for $manufacturer: ${e.message}")
-            }
+        if (intent == null) return false
+
+        return try {
+            context.startActivity(intent)
+            true
+        } catch (e: Exception) {
+            Log.d(TAG, "No vendor-specific battery screen for $manufacturer: ${e.message}")
+            false
         }
     }
 }
