@@ -26,6 +26,8 @@
 
     <color name="switch_thumb">#7864B8</color>
     <color name="switch_track">#D8D0EC</color>
-    <color name="mood_ripple_color">#FFD1C7</color>
+
+    <color name="pastel_red_soft">#FBD5D5</color>
+    <color name="red_dark">#B3261E</color>
 
 </resources>
