@@ -221,17 +221,17 @@
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardLivePreviewContainer"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
                         app:cardCornerRadius="28dp"
                         app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/card_surface"
+                        app:cardBackgroundColor="@color/pastel_peach_soft"
                         app:strokeWidth="0dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center"
                             android:padding="18dp">
@@ -279,19 +279,19 @@
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardPartnerStatus"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:layout_marginStart="8dp"
                         android:visibility="gone"
                         app:cardCornerRadius="28dp"
                         app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/card_surface"
+                        app:cardBackgroundColor="@color/pastel_lavender_soft"
                         app:strokeWidth="0dp"
                         tools:visibility="visible">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center"
                             android:padding="18dp">
