@@ -21,9 +21,14 @@
     <string name="drawer_open">Open navigation menu</string>
     <string name="drawer_close">Close navigation menu</string>
 
+    <string name="menu_tips">Tips</string>
+    <string name="menu_tips_subtitle">Maximize your experience</string>
     <string name="menu_settings">Settings</string>
+    <string name="menu_settings_subtitle">Change the theme</string>
     <string name="menu_about">About</string>
+    <string name="menu_about_subtitle">Learn about WeSynced</string>
     <string name="menu_help">How It Works</string>
+    <string name="menu_help_subtitle">Learn how everything works</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_theme_title">Theme</string>
@@ -44,6 +49,10 @@
 
     <string name="help_title">How It Works</string>
     <string name="help_content">Getting Started\n\n1. Tap \"Generate Random ID\" to create your own pairing code, or type in one your partner already shared with you.\n2. Tap \"Connect\" to start syncing.\n3. Once connected, tap any emoji below to update your mood — your partner sees it instantly.\n\nStaying Connected\n\nYour mood stays visible to your partner even if you close the app. It only changes when you pick a new one, or tap \"Disconnect.\"\n\nThe Widget\n\nAdd the WeSynced widget to your home screen to see your partner\'s mood at a glance, without ever opening the app.\n\nDisconnecting\n\nTapping \"Disconnect\" lets your partner know you\'ve intentionally stepped away — until then, your last mood stays exactly as you left it.\n\nReconnecting\n\nJust enter the same pairing ID again anytime to pick up right where you left off.\n\nCustom Moods\n\nThe four blank slots at the bottom of your mood picker are yours to define — tap one to set your own emoji and name it whatever you like. Long-press any custom slot anytime to change it.</string>
+
+    <string name="tips_title">Tips</string>
+    <string name="tips_content">A Couple of Small Steps, A Big Difference 💡\n\nWeSynced relies on your phone quietly waking it up in the background so your partner\'s mood reaches you the moment they update it — even with the app fully closed. Most phones are designed to aggressively limit exactly that kind of background activity to save power, which is great for random apps you barely open, but it works against an app like this one whose entire purpose is staying quietly connected in the background. These two steps tell your phone to make an exception for WeSynced.\n\n1. Turn Off Battery Optimization\n\nBy default, Android periodically freezes apps sitting in the background to save power. If WeSynced gets frozen, it can miss the tiny background \"ping\" that tells it your partner\'s mood changed — so you might open the app and find it out of date. Turning off battery optimization tells your phone to let WeSynced keep listening, and it barely costs any extra battery in return, since each update is instant and tiny.\n\n2. Lock WeSynced in Recent Apps\n\nOn a lot of phones, swiping an app away from your Recent Apps screen doesn\'t just close it — it fully kills it and blocks it from waking back up in the background, even if battery optimization is already turned off. Locking WeSynced in your Recent Apps list (usually by long-pressing its card and tapping a lock icon) tells your phone not to do that, so it keeps quietly listening even after you\'ve swiped through your other apps.\n\nTaking both steps together is what makes your partner\'s mood actually show up instantly on your home screen widget, without you needing to keep the app open. If you skipped either one during setup, you can always turn it on later — your connection just gets a little more reliable once you do. 💜</string>
+    <string name="tips_battery_button">Turn Off Battery Optimization</string>
 
     <string name="onboarding_slide1_title">Keep the connection live and Instant. ⚡</string>
     <string name="onboarding_next">Next</string>
@@ -72,8 +81,9 @@
     <string name="dialog_cancel">Cancel</string>
 
     <string name="widget_prompt_title">Add the WeSynced Widget?</string>
-    <string name="widget_prompt_message">Keep your partner\'s mood one glance away — right on your home screen.</string>
-    <string name="widget_prompt_positive">Add Widget</string>
+    <string name="widget_prompt_message">Keep your partner\'s mood one glance away — right on your home screen. Pick whichever size fits your home screen best.</string>
+    <string name="widget_prompt_positive_full">Full Widget</string>
+    <string name="widget_prompt_positive_compact">Compact Widget</string>
     <string name="widget_prompt_negative">Not Now</string>
     <string name="widget_prompt_manual_fallback">Long-press your home screen, then find WeSynced in the widget list.</string>
 
