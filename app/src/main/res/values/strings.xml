@@ -10,6 +10,8 @@
     <string name="btn_copy_id">Copy ID</string>
     <string name="btn_disconnect">Disconnect</string>
     <string name="my_current_mood">My Current Mood</string>
+    <string name="my_mood_label">My Mood</string>
+    <string name="partner_mood_label">Partner\'s Mood</string>
     <string name="hint_tap_to_change">Tap to change</string>
     <string name="partner_mood_title">Partner\'s Mood</string>
     <string name="choose_mood_title">Choose a Mood</string>
@@ -41,7 +43,7 @@
     <string name="about_paragraphs">WeSynced is all about keeping you close to your favorite person without any of the extra noise or pressure 🤍\n\nOne-Tap Emotion Sharing 📲: Just tap an emoji to share how you\'re feeling directly on your partner\'s home screen—no need to type out a full message.\n\nZero Pressure, Zero Stress 🍃: Forget read receipts or asking \"Are you free to talk?\" It\'s just a continuous, gentle connection between two people who care about each other.\n\nDesigned to be Calm 🎨: Soft pastel colors and smooth animations make the app feel like a warm hug rather than another notification fighting for your attention.\n\nComplements Your Chat 💬: It doesn\'t replace your actual conversations; it just sits quietly in the background holding a simple \"I\'m thinking of you\" until you\'re ready to catch up.\n\nThank you so much for trying out this very first version! 💌</string>
 
     <string name="help_title">How It Works</string>
-    <string name="help_content">Getting Started\n\n1. Tap \"Generate Random ID\" to create your own pairing code, or type in one your partner already shared with you.\n2. Tap \"Connect\" to start syncing.\n3. Once connected, tap any emoji below to update your mood — your partner sees it instantly.\n\nStaying Connected\n\nYour mood stays visible to your partner even if you close the app. It only changes when you pick a new one, or tap \"Disconnect.\"\n\nThe Widget\n\nAdd the WeSynced widget to your home screen to see your partner\'s mood at a glance, without ever opening the app.\n\nDisconnecting\n\nTapping \"Disconnect\" lets your partner know you\'ve intentionally stepped away — until then, your last mood stays exactly as you left it.\n\nReconnecting\n\nJust enter the same pairing ID again anytime to pick up right where you left off.</string>
+    <string name="help_content">Getting Started\n\n1. Tap \"Generate Random ID\" to create your own pairing code, or type in one your partner already shared with you.\n2. Tap \"Connect\" to start syncing.\n3. Once connected, tap any emoji below to update your mood — your partner sees it instantly.\n\nStaying Connected\n\nYour mood stays visible to your partner even if you close the app. It only changes when you pick a new one, or tap \"Disconnect.\"\n\nThe Widget\n\nAdd the WeSynced widget to your home screen to see your partner\'s mood at a glance, without ever opening the app.\n\nDisconnecting\n\nTapping \"Disconnect\" lets your partner know you\'ve intentionally stepped away — until then, your last mood stays exactly as you left it.\n\nReconnecting\n\nJust enter the same pairing ID again anytime to pick up right where you left off.\n\nCustom Moods\n\nThe four blank slots at the bottom of your mood picker are yours to define — tap one to set your own emoji and name it whatever you like. Long-press any custom slot anytime to change it.</string>
 
     <string name="onboarding_slide1_title">Keep the connection live and Instant. ⚡</string>
     <string name="onboarding_next">Next</string>
@@ -49,6 +51,12 @@
     <string name="onboarding_slide2_body">We promise it won\'t drain your phone. The background check finishes in milliseconds and consumes under 1% of your battery throughout the whole day. Just pure, quiet sync.</string>
     <string name="onboarding_battery_button">Turn Off Battery Saver</string>
     <string name="onboarding_skip">Skip for now</string>
-    <string name="my_mood_label">My Mood</string>
-    <string name="partner_mood_label">Partner\'s Mood</string>
+
+    <string name="custom_mood_placeholder">➕</string>
+    <string name="custom_mood_fallback_label">New Mood</string>
+    <string name="dialog_custom_mood_title">Set Your Own Mood</string>
+    <string name="dialog_emoji_hint">Emoji</string>
+    <string name="dialog_label_hint">Name (e.g. Gaming)</string>
+    <string name="dialog_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>
