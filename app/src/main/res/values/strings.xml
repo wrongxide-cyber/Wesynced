@@ -59,4 +59,14 @@
     <string name="dialog_label_hint">Name (e.g. Gaming)</string>
     <string name="dialog_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="widget_prompt_title">Add your WeSynced widget? 💕</string>
+    <string name="widget_prompt_message">Add the WeSynced widget to your home screen to keep your connection visible at a glance, even when the app is closed.</string>
+    <string name="widget_prompt_positive">Add Widget</string>
+    <string name="widget_prompt_negative">Maybe Later</string>
+    <string name="widget_prompt_manual_fallback">Long-press your home screen, tap Widgets, and add WeSynced to keep your connection visible.</string>
+
+    <string name="qs_tile_label">Partner Mood</string>
+    <string name="qs_tile_not_connected">Not connected</string>
+
+    <string name="custom_mood_tap_hold_hint">Already your mood — tap and hold to edit</string>
 </resources>
