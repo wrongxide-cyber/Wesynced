@@ -658,6 +658,15 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Floating bubbles: fills the empty space left once pairing succeeds -->
+                <FrameLayout
+                    android:id="@+id/floatingBubbleContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
+                    android:clipChildren="false" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
