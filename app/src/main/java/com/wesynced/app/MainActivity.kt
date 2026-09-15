@@ -96,14 +96,24 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        binding.navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
-                R.id.nav_about -> startActivity(Intent(this, AboutActivity::class.java))
-                R.id.nav_help -> startActivity(Intent(this, HelpActivity::class.java))
-            }
+        binding.navTips.setOnClickListener {
+            startActivity(Intent(this, TipsActivity::class.java))
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-            true
+        }
+
+        binding.navSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        binding.navAbout.setOnClickListener {
+            startActivity(Intent(this, AboutActivity::class.java))
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        binding.navHelp.setOnClickListener {
+            startActivity(Intent(this, HelpActivity::class.java))
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
     }
 
@@ -177,7 +187,14 @@ class MainActivity : AppCompatActivity() {
         updateLivePreview(selectedMoodEmoji, animate = false)
 
         if (!savedId.isNullOrEmpty()) {
+            // We already know from last session that we're paired — show the
+            // paired UI immediately instead of waiting for Firebase to confirm
+            // it, so reopening the app doesn't replay the pairing card's
+            // disappearing animation every single time.
             binding.etPairingId.setText(savedId)
+            binding.cardPairing.visibility = View.GONE
+            binding.cardPartnerStatus.visibility = View.VISIBLE
+            binding.cardDisconnect.visibility = View.VISIBLE
             connectToPair(savedId, isManualConnect = false)
         }
     }
@@ -234,21 +251,26 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Shown once, right after the first successful manual pairing. Offers
+     * both widget sizes — full 2x2 or the app-icon-sized compact one — and
+     * lets the user pick, or add neither.
+     */
     private fun maybePromptAddWidget() {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (prefs.getBoolean(KEY_WIDGET_PROMPT_SHOWN, false)) return
         prefs.edit().putBoolean(KEY_WIDGET_PROMPT_SHOWN, true).apply()
 
         val appWidgetManager = AppWidgetManager.getInstance(this)
-        val componentName = ComponentName(this, MoodWidgetProvider::class.java)
-
-        if (appWidgetManager.getAppWidgetIds(componentName).isNotEmpty()) return
 
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.widget_prompt_title))
             .setMessage(getString(R.string.widget_prompt_message))
-            .setPositiveButton(getString(R.string.widget_prompt_positive)) { _, _ ->
-                requestPinWidget(appWidgetManager, componentName)
+            .setPositiveButton(getString(R.string.widget_prompt_positive_full)) { _, _ ->
+                requestPinWidget(appWidgetManager, ComponentName(this, MoodWidgetProvider::class.java))
+            }
+            .setNeutralButton(getString(R.string.widget_prompt_positive_compact)) { _, _ ->
+                requestPinWidget(appWidgetManager, ComponentName(this, MoodWidgetProviderSmall::class.java))
             }
             .setNegativeButton(getString(R.string.widget_prompt_negative), null)
             .show()
