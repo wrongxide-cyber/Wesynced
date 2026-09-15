@@ -8,11 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 
-/**
- * MoodWidgetProvider: Standalone Android Home Screen Widget.
- * Displays the paired friend's live emoji AND their custom text label,
- * updating in the background when the friend changes their mood in WeSynced.
- */
 class MoodWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(
@@ -33,14 +28,21 @@ class MoodWidgetProvider : AppWidgetProvider() {
         const val PREFS_NAME = "wesynced_prefs"
         const val KEY_FRIEND_MOOD = "friend_mood"
         const val KEY_FRIEND_LABEL = "friend_label"
+        const val KEY_FRIEND_TIMESTAMP = "friend_timestamp"
         const val DEFAULT_EMOJI = "❤️"
         const val DEFAULT_LABEL = "Partner Mood"
 
-        fun updateFriendMood(context: Context, friendEmoji: String, friendLabel: String = "") {
+        fun updateFriendMood(
+            context: Context,
+            friendEmoji: String,
+            friendLabel: String = "",
+            friendTimestamp: Long = System.currentTimeMillis()
+        ) {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             prefs.edit()
                 .putString(KEY_FRIEND_MOOD, friendEmoji)
                 .putString(KEY_FRIEND_LABEL, friendLabel.ifBlank { DEFAULT_LABEL })
+                .putLong(KEY_FRIEND_TIMESTAMP, friendTimestamp)
                 .apply()
 
             val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -51,7 +53,6 @@ class MoodWidgetProvider : AppWidgetProvider() {
                 updateAppWidget(context, appWidgetManager, appWidgetId, friendEmoji, friendLabel.ifBlank { DEFAULT_LABEL })
             }
 
-            // Keep the app-icon-sized widget in sync too.
             MoodWidgetProviderSmall.refreshWidgets(context, friendEmoji)
         }
 
