@@ -49,4 +49,6 @@
     <string name="onboarding_slide2_body">We promise it won\'t drain your phone. The background check finishes in milliseconds and consumes under 1% of your battery throughout the whole day. Just pure, quiet sync.</string>
     <string name="onboarding_battery_button">Turn Off Battery Saver</string>
     <string name="onboarding_skip">Skip for now</string>
+    <string name="my_mood_label">My Mood</string>
+    <string name="partner_mood_label">Partner\'s Mood</string>
 </resources>
