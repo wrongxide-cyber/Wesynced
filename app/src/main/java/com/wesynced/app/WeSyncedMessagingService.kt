@@ -3,11 +3,6 @@ package com.wesynced.app
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-/**
- * Receives silent FCM data pushes even when the app is fully closed.
- * Android wakes this service briefly just to run onMessageReceived,
- * then it goes back to sleep — no notification, no UI.
- */
 class WeSyncedMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
@@ -19,6 +14,7 @@ class WeSyncedMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(remoteMessage)
         val emoji = remoteMessage.data["emoji"] ?: return
         val label = remoteMessage.data["label"] ?: ""
-        MoodWidgetProvider.updateFriendMood(applicationContext, emoji, label)
+        val timestamp = remoteMessage.data["timestamp"]?.toLongOrNull() ?: System.currentTimeMillis()
+        MoodWidgetProvider.updateFriendMood(applicationContext, emoji, label, timestamp)
     }
 }
