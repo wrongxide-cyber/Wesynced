@@ -15,6 +15,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         if (!OnboardingActivity.isOnboardingDone(this)) {
@@ -201,12 +203,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    /**
-     * Shown exactly once, right after the very first successful manual
-     * pairing, inviting the user to pin the home screen widget — and
-     * pulling up the OS "add widget" flow directly instead of making
-     * them dig through their launcher's widget picker.
-     */
     private fun maybePromptAddWidget() {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (prefs.getBoolean(KEY_WIDGET_PROMPT_SHOWN, false)) return
@@ -215,7 +211,6 @@ class MainActivity : AppCompatActivity() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         val componentName = ComponentName(this, MoodWidgetProvider::class.java)
 
-        // Don't nag if they've already added it some other way.
         if (appWidgetManager.getAppWidgetIds(componentName).isNotEmpty()) return
 
         MaterialAlertDialogBuilder(this)
@@ -232,8 +227,6 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && appWidgetManager.isRequestPinAppWidgetSupported) {
             appWidgetManager.requestPinAppWidget(componentName, null, null)
         } else {
-            // Older Android or a launcher that doesn't support the pin flow —
-            // there's no programmatic fallback, so just point them to it.
             Toast.makeText(this, getString(R.string.widget_prompt_manual_fallback), Toast.LENGTH_LONG).show()
         }
     }
@@ -324,8 +317,6 @@ class MainActivity : AppCompatActivity() {
 
         card.setOnClickListener {
             if (selectedMoodEmoji == emoji) {
-                // Tapping a custom slot that's already your current mood does
-                // nothing useful — nudge them toward the edit gesture instead.
                 Toast.makeText(this, getString(R.string.custom_mood_tap_hold_hint), Toast.LENGTH_SHORT).show()
             } else {
                 onMoodSelected(emoji, card)
