@@ -669,13 +669,14 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/card_surface"
+        android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="8dp">
+            android:paddingTop="10dp">
 
             <LinearLayout
                 android:id="@+id/nav_tips"
@@ -711,14 +712,6 @@
                         android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/menu_tips_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -758,14 +751,6 @@
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/menu_settings_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
-
                 </LinearLayout>
             </LinearLayout>
 
@@ -804,14 +789,6 @@
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/menu_about_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
-
                 </LinearLayout>
             </LinearLayout>
 
@@ -849,14 +826,6 @@
                         android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/menu_help_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
 
                 </LinearLayout>
             </LinearLayout>
