@@ -25,11 +25,10 @@
     <color name="text_primary">#EDE8F2</color>
     <color name="text_secondary">#A79FB5</color>
 
-    <!-- Mood ripple: deliberately brighter in dark mode -->
-    <color name="mood_ripple_color">#B98578</color>
-
-    <!-- Visible switch thumb against dark purple track -->
     <color name="switch_thumb">#F4EFFC</color>
     <color name="switch_track">#7868A0</color>
+
+    <color name="pastel_red_soft">#3A2323</color>
+    <color name="red_dark">#F0A6A0</color>
 
 </resources>
