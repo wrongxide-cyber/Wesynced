@@ -52,6 +52,15 @@
     <string name="onboarding_battery_button">Turn Off Battery Saver</string>
     <string name="onboarding_skip">Skip for now</string>
 
+    <string name="onboarding_slide3_title">One last thing — keep us safe in the background 🔒</string>
+    <string name="onboarding_slide3_intro">This isn\'t a WeSynced thing — it\'s just how Android phones manage any app that quietly runs in the background. A tiny setting called \"lock\" tells your phone: \"don\'t worry about this one, let it be.\" It costs no noticeable battery — we\'re a tiny, simple app that just waits quietly for your partner\'s mood 💜</string>
+    <string name="onboarding_slide3_steps_default">Open your Recent Apps screen, long-press our card, and tap the lock icon 🔒 if you see one.</string>
+    <string name="onboarding_slide3_steps_xiaomi">Open Recent Apps, then swipe our card downward until a little padlock icon appears 🔒</string>
+    <string name="onboarding_slide3_steps_samsung">Open Recent Apps, tap our app\'s icon at the top of the card, then tap \"Lock this app\" 🔒</string>
+    <string name="onboarding_slide3_steps_coloros">Open Recent Apps, long-press our card, then tap the lock icon that pops up 🔒</string>
+    <string name="onboarding_slide3_steps_stock">Good news — your phone doesn\'t usually need this step. You\'re already set! 🎉</string>
+    <string name="onboarding_slide3_button">Got it, I\'ll do this now</string>
+
     <string name="custom_mood_placeholder">➕</string>
     <string name="custom_mood_fallback_label">New Mood</string>
     <string name="dialog_custom_mood_title">Set Your Own Mood</string>
