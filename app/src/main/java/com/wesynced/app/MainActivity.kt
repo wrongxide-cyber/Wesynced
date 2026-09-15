@@ -14,6 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.messaging.FirebaseMessaging
 import com.wesynced.app.databinding.ActivityMainBinding
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +42,21 @@ class MainActivity : AppCompatActivity() {
         override fun run() {
             refreshFriendLastUpdatedText()
             timeUpdateHandler.postDelayed(this, 60_000L)
+        }
+    }
+
+    // Floating emoji bubbles shown in the reserved space at the bottom
+    // once pairing succeeds. Only ever a handful on screen at once.
+    private val floatingEmojis = listOf("💌", "✨", "🌸", "💫", "🎈", "🕊️", "🌷", "☁️", "💜", "🍡")
+    private val activeBubbles = mutableListOf<View>()
+    private val bubbleHandler = Handler(Looper.getMainLooper())
+    private var bubblesRunning = false
+    private val bubbleSpawnRunnable = object : Runnable {
+        override fun run() {
+            if (bubblesRunning) {
+                spawnBubbleIfRoom()
+                bubbleHandler.postDelayed(this, Random.nextLong(1800L, 3200L))
+            }
         }
     }
 
@@ -82,6 +99,9 @@ class MainActivity : AppCompatActivity() {
         isAppInForeground = true
         if (::binding.isInitialized) {
             timeUpdateHandler.post(timeUpdateRunnable)
+            if (currentPairingId != null) {
+                startFloatingBubbles()
+            }
         }
     }
 
@@ -89,6 +109,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         isAppInForeground = false
         timeUpdateHandler.removeCallbacks(timeUpdateRunnable)
+        pauseFloatingBubbles()
     }
 
     private fun setupNavigationDrawer() {
@@ -168,6 +189,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnConnect.isEnabled = true
         binding.btnConnect.text = getString(R.string.btn_connect)
 
+        stopFloatingBubbles()
+
         friendLastUpdateMillis = 0L
 
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -226,6 +249,8 @@ class MainActivity : AppCompatActivity() {
                         binding.cardPartnerStatus.visibility = View.VISIBLE
                         binding.cardDisconnect.visibility = View.VISIBLE
                         binding.cardPairing.visibility = View.GONE
+
+                        startFloatingBubbles()
 
                         FirebaseSyncManager.updateMyMood(selectedMoodEmoji, moodCatalogue[selectedMoodEmoji].orEmpty())
 
@@ -462,7 +487,103 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        bubbleHandler.removeCallbacksAndMessages(null)
         FirebaseSyncManager.disconnect()
+    }
+
+    // --- Floating emoji bubbles -------------------------------------------------
+    // Starts once pairing succeeds and the pairing card disappears, using the
+    // reserved box at the bottom of the screen. Bubbles drift in from one side,
+    // hold, then drift out the OPPOSITE side and are removed. Capped at
+    // MAX_FLOATING_BUBBLES on screen at any time so it never feels cluttered.
+
+    private fun startFloatingBubbles() {
+        binding.floatingBubbleContainer.visibility = View.VISIBLE
+        if (bubblesRunning) return
+        bubblesRunning = true
+        bubbleHandler.post(bubbleSpawnRunnable)
+    }
+
+    /** Pauses spawning (e.g. app backgrounded) without clearing existing bubbles. */
+    private fun pauseFloatingBubbles() {
+        bubblesRunning = false
+        bubbleHandler.removeCallbacks(bubbleSpawnRunnable)
+    }
+
+    /** Fully stops and clears bubbles (e.g. user disconnected). */
+    private fun stopFloatingBubbles() {
+        bubblesRunning = false
+        bubbleHandler.removeCallbacksAndMessages(null)
+        binding.floatingBubbleContainer.removeAllViews()
+        activeBubbles.clear()
+        binding.floatingBubbleContainer.visibility = View.GONE
+    }
+
+    private fun spawnBubbleIfRoom() {
+        if (activeBubbles.size >= MAX_FLOATING_BUBBLES) return
+
+        val container = binding.floatingBubbleContainer
+        val containerWidth = container.width
+        val containerHeight = container.height
+        if (containerWidth == 0 || containerHeight == 0) return // not laid out yet, try next tick
+
+        val bubbleSizePx = (36 * resources.displayMetrics.density).toInt()
+
+        val bubble = TextView(this).apply {
+            text = floatingEmojis.random()
+            textSize = 26f
+            alpha = 0f
+        }
+
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val maxTopMargin = (containerHeight - bubbleSizePx).coerceAtLeast(0)
+        params.topMargin = Random.nextInt(0, maxTopMargin + 1)
+        container.addView(bubble, params)
+        activeBubbles.add(bubble)
+
+        val enterFromLeft = Random.nextBoolean()
+        val startX = if (enterFromLeft) -bubbleSizePx.toFloat() else containerWidth.toFloat()
+        val restX = if (enterFromLeft) {
+            containerWidth * 0.15f
+        } else {
+            containerWidth * 0.85f - bubbleSizePx
+        }
+        val exitX = if (enterFromLeft) containerWidth.toFloat() else -bubbleSizePx.toFloat()
+
+        bubble.translationX = startX
+
+        AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, startX, restX),
+                ObjectAnimator.ofFloat(bubble, View.ALPHA, 0f, 1f)
+            )
+            duration = 900
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+
+        val holdDurationMs = Random.nextLong(2200L, 3800L)
+        bubble.postDelayed({
+            if (!activeBubbles.contains(bubble)) return@postDelayed
+
+            AnimatorSet().apply {
+                playTogether(
+                    ObjectAnimator.ofFloat(bubble, View.TRANSLATION_X, restX, exitX),
+                    ObjectAnimator.ofFloat(bubble, View.ALPHA, 1f, 0f)
+                )
+                duration = 900
+                interpolator = AccelerateDecelerateInterpolator()
+                start()
+            }
+
+            bubble.postDelayed({
+                container.removeView(bubble)
+                activeBubbles.remove(bubble)
+            }, 950L)
+        }, holdDurationMs)
     }
 
     companion object {
@@ -470,5 +591,6 @@ class MainActivity : AppCompatActivity() {
         const val KEY_SAVED_PAIRING_ID = "saved_pairing_id"
         const val KEY_MY_MOOD = "saved_my_mood"
         const val KEY_WIDGET_PROMPT_SHOWN = "widget_prompt_shown"
+        const val MAX_FLOATING_BUBBLES = 5
     }
 }
