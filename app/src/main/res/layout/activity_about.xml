@@ -93,15 +93,17 @@
                     android:text="@string/about_paragraphs"
                     android:textSize="16sp"
                     android:textColor="@color/text_primary" />
-                <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:text="Animated emoji by Google Noto Emoji, licensed under CC BY 4.0"
-    android:textSize="11sp"
-    android:textColor="@color/text_secondary" />
 
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/about_license_notice"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary" />
 
         </LinearLayout>
 
