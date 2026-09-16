@@ -1,0 +1,57 @@
+name: Download Animated Emoji Assets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Download animated emoji files
+        run: |
+          mkdir -p app/src/main/assets/emoji_lottie
+          python3 - <<'EOF'
+          import json
+          import os
+          import urllib.request
+
+          API_URL = "https://googlefonts.github.io/noto-emoji-animation/data/api.json"
+          DOWNLOAD_URL = "https://fonts.gstatic.com/s/e/notoemoji/latest/{code}/lottie.json"
+          OUTPUT_DIR = "app/src/main/assets/emoji_lottie"
+
+          with urllib.request.urlopen(API_URL) as response:
+              data = json.load(response)
+
+          icons = data["icons"]
+          print(f"Found {len(icons)} animated emoji entries.")
+
+          for icon in icons:
+              code = icon["codepoint"]
+              filename = f"emoji_u{code}.json"
+              out_path = os.path.join(OUTPUT_DIR, filename)
+              if os.path.exists(out_path):
+                  continue
+              url = DOWNLOAD_URL.format(code=code)
+              try:
+                  urllib.request.urlretrieve(url, out_path)
+              except Exception as e:
+                  print(f"Failed {filename}: {e}")
+          EOF
+
+      - name: Commit and push downloaded files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/assets/emoji_lottie
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Add bundled animated emoji assets"
+          git push
