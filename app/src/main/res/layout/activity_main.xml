@@ -253,13 +253,10 @@
                                 app:cardBackgroundColor="@color/pastel_peach_light"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
                                     android:id="@+id/tvLivePreviewEmoji"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="♥️"
-                                    android:textSize="48sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <TextView
@@ -313,13 +310,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_light"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
                                     android:id="@+id/tvFriendEmoji"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="♥️"
-                                    android:textSize="48sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <TextView
@@ -394,12 +388,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodHappy"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="♥️"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -415,12 +407,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodSleepy"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="🥺"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -436,12 +426,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodPopcorn"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="🙄"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -457,12 +445,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodGrumpy"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="😞"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
 
@@ -487,12 +473,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodHeart"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="🫩"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -508,12 +492,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodPartyTada"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="🫦"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -529,12 +511,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodPartyFace"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="💀"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -550,12 +530,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/ivMoodCoffee"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="😕"
-                                    android:textSize="32sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
 
@@ -579,13 +557,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
                                     android:id="@+id/tvCustomEmoji1"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="@string/custom_mood_placeholder"
-                                    android:textSize="28sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -601,13 +576,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
                                     android:id="@+id/tvCustomEmoji2"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="@string/custom_mood_placeholder"
-                                    android:textSize="28sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -623,13 +595,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
                                     android:id="@+id/tvCustomEmoji3"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="@string/custom_mood_placeholder"
-                                    android:textSize="28sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.card.MaterialCardView
@@ -645,13 +614,10 @@
                                 app:cardBackgroundColor="@color/pastel_lavender_soft"
                                 app:strokeWidth="0dp">
 
-                                <TextView
+                                <com.wesynced.app.EmojiView
                                     android:id="@+id/tvCustomEmoji4"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:text="@string/custom_mood_placeholder"
-                                    android:textSize="28sp" />
+                                    android:layout_height="match_parent" />
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
 
