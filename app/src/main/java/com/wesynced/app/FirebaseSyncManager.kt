@@ -148,17 +148,16 @@ object FirebaseSyncManager {
                     return
                 }
 
-                val friendEmoji = if (partnerPresent) {
-                    partner.child("mood").getValue(String::class.java).orEmpty().ifBlank { "♥️" }
-                } else {
-                    // Preserve the partner tile and show the app's existing offline emoji.
-                    DISCONNECT_EMOJI
-                }
-                val friendLabel = if (partnerPresent) {
-                    partner.child("label").getValue(String::class.java).orEmpty()
-                } else {
-                    DISCONNECT_LABEL
-                }
+                // The mood/label shown always comes straight from the partner's node,
+                // regardless of live presence. "presence" only reflects whether their
+                // socket is currently connected (it flips to false automatically via
+                // onDisconnect() when they lose internet or the app is backgrounded),
+                // and that alone should never overwrite the displayed mood. The only
+                // way the emoji/label become "Gone Offline" is if disconnectManually()
+                // actually wrote DISCONNECT_EMOJI/DISCONNECT_LABEL into this node,
+                // which only happens when the partner explicitly taps Disconnect.
+                val friendEmoji = partner.child("mood").getValue(String::class.java).orEmpty().ifBlank { "♥️" }
+                val friendLabel = partner.child("label").getValue(String::class.java).orEmpty()
                 val timestamp = partner.child("timestamp").getValue(Long::class.java) ?: 0L
 
                 if (friendEmoji != lastFriendEmoji || friendLabel != lastFriendLabel) {
