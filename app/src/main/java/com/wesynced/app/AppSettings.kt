@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatDelegate
 
 /**
  * Centralized storage and application of user-configurable settings:
- * theme mode (light/dark), sync interval preference, and the 4
- * user-defined custom mood slots (emoji + name each).
+ * theme mode (light/dark), animated emoji toggle, sync interval preference,
+ * and the 4 user-defined custom mood slots (emoji + name each).
  *
  * NOTE: sync interval is currently only STORED here — FirebaseSyncManager still
  * syncs live/instantly regardless of this value. Actual periodic-sync behavior
@@ -16,6 +16,7 @@ object AppSettings {
 
     private const val PREFS_NAME = "wesynced_settings"
     private const val KEY_THEME_MODE = "theme_mode"
+    private const val KEY_ANIMATED_EMOJI_ENABLED = "animated_emoji_enabled"
     private const val KEY_SYNC_INTERVAL_MINUTES = "sync_interval_minutes"
     private const val KEY_CUSTOM_MOOD_EMOJI_PREFIX = "custom_mood_emoji_"
     private const val KEY_CUSTOM_MOOD_LABEL_PREFIX = "custom_mood_label_"
@@ -49,6 +50,19 @@ object AppSettings {
     /** Applies whatever theme mode was last saved. Call at app startup. */
     fun applySavedTheme(context: Context) {
         applyThemeMode(getThemeMode(context))
+    }
+
+    /** Whether animated (Lottie) emoji should be used where available. Defaults to on. */
+    fun getAnimatedEmojiEnabled(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(KEY_ANIMATED_EMOJI_ENABLED, true)
+    }
+
+    fun setAnimatedEmojiEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_ANIMATED_EMOJI_ENABLED, enabled)
+            .apply()
     }
 
     fun getSyncIntervalMinutes(context: Context): Int {
