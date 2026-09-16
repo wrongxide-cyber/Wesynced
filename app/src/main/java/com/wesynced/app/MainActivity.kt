@@ -41,6 +41,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentPairingId: String? = null
     private var isPartnerConnected = false
+    // Drives the marquee/twinkle animation and floating bubbles. Unlike
+    // isPartnerConnected (raw Firebase presence, which flips false the instant
+    // the partner's socket drops — backgrounded, screen off, weak signal),
+    // this only turns false when the partner's mood actually shows they
+    // tapped Disconnect, or they've never joined the room at all. A partner
+    // who is simply offline/backgrounded keeps their last mood animating.
+    private var isPartnerMoodActive = false
     private var isRoomJoined = false
     private var selectedMoodEmoji: String = "♥️"
     private lateinit var customSlotViews: List<Pair<MaterialCardView, EmojiView>>
@@ -120,7 +127,7 @@ class MainActivity : AppCompatActivity() {
             timeUpdateHandler.post(timeUpdateRunnable)
             if (isRoomJoined) {
                 ensureJoinedMoodLayout()
-                if (isPartnerConnected) {
+                if (isPartnerMoodActive) {
                     startFloatingBubbles()
                     startLabelMarquee()
                 } else {
@@ -245,6 +252,7 @@ class MainActivity : AppCompatActivity() {
         currentPairingId = null
         isRoomJoined = false
         isPartnerConnected = false
+        isPartnerMoodActive = false
 
         binding.cardConnectionBadge.visibility = View.GONE
         binding.cardDisconnect.visibility = View.GONE
@@ -290,6 +298,7 @@ class MainActivity : AppCompatActivity() {
         currentPairingId = cleanPairingId
         isRoomJoined = true
         isPartnerConnected = false
+        isPartnerMoodActive = false
         savePairingId(cleanPairingId)
 
         binding.etPairingId.setText(cleanPairingId)
@@ -314,6 +323,25 @@ class MainActivity : AppCompatActivity() {
                     if (!isRoomJoined) return@runOnUiThread
                     displayFriendMood(friendEmoji, friendLabel, timestamp)
                     MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji, friendLabel, timestamp)
+
+                    // The animation reflects the partner's actual mood, not their
+                    // live presence. It only stops for an explicit Disconnect tap,
+                    // or before they've ever joined the room — never for simply
+                    // being backgrounded or offline.
+                    val partnerExplicitlyDisconnected =
+                        friendEmoji == FirebaseSyncManager.DISCONNECT_EMOJI &&
+                            friendLabel == FirebaseSyncManager.DISCONNECT_LABEL
+                    val partnerNeverJoined = friendLabel == FirebaseSyncManager.NOT_CONNECTED_LABEL
+
+                    isPartnerMoodActive = !partnerExplicitlyDisconnected && !partnerNeverJoined
+
+                    if (isPartnerMoodActive) {
+                        startLabelMarquee()
+                        startFloatingBubbles()
+                    } else {
+                        showStaticMoodLabels()
+                        stopFloatingBubbles()
+                    }
                 }
             },
             onStatusChanged = { partnerConnected, message ->
@@ -331,9 +359,11 @@ class MainActivity : AppCompatActivity() {
                         isPartnerConnected = true
                         binding.tvConnectionBadge.text = "Synced: $cleanPairingId"
                         binding.cardConnectionBadge.visibility = View.VISIBLE
-                        showJoinedMoodLayoutWithoutAnimation()
-                        startLabelMarquee()
-                        startFloatingBubbles()
+                        ensureJoinedMoodLayout()
+                        if (isPartnerMoodActive) {
+                            startLabelMarquee()
+                            startFloatingBubbles()
+                        }
 
                         FirebaseSyncManager.updateMyMood(
                             selectedMoodEmoji,
@@ -354,12 +384,15 @@ class MainActivity : AppCompatActivity() {
                         }
                     } else {
                         // Still joined to the Pairing ID. Never collapse to the
-                        // single-card layout merely because the partner is offline.
+                        // single-card layout merely because the partner's socket
+                        // is offline — and never stop the marquee/bubbles here
+                        // either. Those are driven solely by the partner's mood
+                        // content (see onFriendMoodChanged above), so a
+                        // backgrounded/offline partner keeps animating their
+                        // last-known mood until they explicitly disconnect.
                         isPartnerConnected = false
                         binding.cardConnectionBadge.visibility = View.GONE
-                        showJoinedMoodLayoutWithoutAnimation()
-                        showStaticMoodLabels()
-                        stopFloatingBubbles()
+                        ensureJoinedMoodLayout()
 
                         if (isManualConnect && message.contains("error", ignoreCase = true)) {
                             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -619,7 +652,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startLabelMarquee() {
-        if (!::binding.isInitialized || !isRoomJoined || !isPartnerConnected) return
+        if (!::binding.isInitialized || !isRoomJoined || !isPartnerMoodActive) return
         applyTwinkleAccentColors()
         binding.tvLivePreviewLabel.setMarqueeEnabled(true)
         binding.tvFriendStatus.setMarqueeEnabled(true)
@@ -691,7 +724,7 @@ class MainActivity : AppCompatActivity() {
         // is deliberately stable so theme changes/partner disconnects cannot
         // collapse the partner tile.
         showJoinedMoodLayoutWithoutAnimation()
-        if (isPartnerConnected) startLabelMarquee()
+        if (isPartnerMoodActive) startLabelMarquee()
     }
 
     private fun animateToUnpairedMood() {
