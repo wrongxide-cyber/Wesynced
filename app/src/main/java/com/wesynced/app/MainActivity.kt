@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     private var currentPairingId: String? = null
     private var selectedMoodEmoji: String = "♥️"
     private lateinit var customSlotViews: List<Pair<MaterialCardView, EmojiView>>
+    private lateinit var staticMoodEmojis: List<Pair<EmojiView, String>>
+    private var currentFriendEmoji: String? = null
 
     private var isAppInForeground = false
     private var friendLastUpdateMillis: Long = 0L
@@ -59,6 +61,10 @@ class MainActivity : AppCompatActivity() {
         "🐥", "🌹", "🍥", "🥰", "😊", "🩷", "💗", "💖", "🫶", "🌱",
         "🍒", "🍑", "🦄", "🐰", "🐻", "🍩", "🧁", "🍦", "🎉", "🪄"
     )
+    // Gentle random "twinkle" fade for the My Mood label text.
+    private val twinkleHandler = Handler(Looper.getMainLooper())
+    private var twinkleRunning = false
+
     private val activeBubbles = mutableListOf<View>()
     private val bubbleHandler = Handler(Looper.getMainLooper())
     private var bubblesRunning = false
@@ -113,7 +119,34 @@ class MainActivity : AppCompatActivity() {
             if (currentPairingId != null) {
                 startFloatingBubbles()
             }
+            startLabelTwinkle()
+            refreshEmojiDisplayMode()
         }
+    }
+
+    /**
+     * Re-applies every currently-shown emoji through EmojiView.setEmoji(),
+     * so toggling "Animated Emoji" in Settings takes effect immediately on
+     * returning here, instead of requiring a full app restart.
+     */
+    private fun refreshEmojiDisplayMode() {
+        if (::staticMoodEmojis.isInitialized) {
+            for ((emojiView, emoji) in staticMoodEmojis) {
+                emojiView.setEmoji(emoji)
+            }
+        }
+
+        if (::customSlotViews.isInitialized) {
+            for (index in customSlotViews.indices) {
+                val emoji = AppSettings.getCustomMoodEmoji(this, index)
+                if (!emoji.isNullOrBlank()) {
+                    customSlotViews[index].second.setEmoji(emoji)
+                }
+            }
+        }
+
+        binding.tvLivePreviewEmoji.setEmoji(selectedMoodEmoji)
+        currentFriendEmoji?.let { binding.tvFriendEmoji.setEmoji(it) }
     }
 
     override fun onPause() {
@@ -121,6 +154,7 @@ class MainActivity : AppCompatActivity() {
         isAppInForeground = false
         timeUpdateHandler.removeCallbacks(timeUpdateRunnable)
         pauseFloatingBubbles()
+        stopLabelTwinkle()
     }
 
     private fun setupNavigationDrawer() {
@@ -340,6 +374,8 @@ class MainActivity : AppCompatActivity() {
         Triple(binding.btnMoodCoffee, binding.ivMoodCoffee, "😕")
     )
 
+    staticMoodEmojis = emojiButtons.map { (_, emojiView, emoji) -> emojiView to emoji }
+
     for ((button, emojiView, emoji) in emojiButtons) {
         emojiView.setEmoji(emoji)
         button.setOnClickListener {
@@ -452,6 +488,7 @@ class MainActivity : AppCompatActivity() {
 }
 
     private fun displayFriendMood(friendEmoji: String, friendLabel: String, timestampMillis: Long) {
+    currentFriendEmoji = friendEmoji
     binding.tvFriendEmoji.setEmoji(friendEmoji)
     binding.tvFriendStatus.text = friendLabel.ifBlank {
         moodCatalogue[friendEmoji] ?: getString(R.string.custom_mood_fallback_label)
@@ -508,7 +545,60 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         bubbleHandler.removeCallbacksAndMessages(null)
+        twinkleHandler.removeCallbacksAndMessages(null)
         FirebaseSyncManager.disconnect()
+    }
+
+    // --- My Mood label twinkle ---------------------------------------------------
+    // Repeatedly fades the "Safe and Sound"-style label in and out at small
+    // random offsets, so it reads like it's gently twinkling in place rather
+    // than sitting static. Never fully invisible — dims to a faint alpha
+    // instead — so it never looks broken or blank.
+
+    private fun startLabelTwinkle() {
+        if (twinkleRunning || !::binding.isInitialized) return
+        twinkleRunning = true
+        twinkleCycle()
+    }
+
+    private fun stopLabelTwinkle() {
+        twinkleRunning = false
+        twinkleHandler.removeCallbacksAndMessages(null)
+        if (::binding.isInitialized) {
+            binding.tvLivePreviewLabel.animate().cancel()
+            binding.tvLivePreviewLabel.alpha = 1f
+            binding.tvLivePreviewLabel.translationX = 0f
+            binding.tvLivePreviewLabel.translationY = 0f
+        }
+    }
+
+    private fun twinkleCycle() {
+        if (!twinkleRunning || !::binding.isInitialized) return
+        val label = binding.tvLivePreviewLabel
+
+        label.animate().cancel()
+        label.translationX = Random.nextInt(-10, 11).toFloat()
+        label.translationY = Random.nextInt(-6, 7).toFloat()
+        label.alpha = 0.15f
+
+        label.animate()
+            .alpha(1f)
+            .setDuration(Random.nextLong(450L, 750L))
+            .withEndAction {
+                if (!twinkleRunning) return@withEndAction
+                twinkleHandler.postDelayed({
+                    if (!twinkleRunning) return@postDelayed
+                    label.animate()
+                        .alpha(0.15f)
+                        .setDuration(Random.nextLong(500L, 900L))
+                        .withEndAction {
+                            if (!twinkleRunning) return@withEndAction
+                            twinkleHandler.postDelayed({ twinkleCycle() }, Random.nextLong(300L, 900L))
+                        }
+                        .start()
+                }, Random.nextLong(900L, 1800L))
+            }
+            .start()
     }
 
     // --- Floating emoji bubbles -------------------------------------------------
