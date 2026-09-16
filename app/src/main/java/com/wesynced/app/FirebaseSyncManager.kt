@@ -23,6 +23,7 @@ object FirebaseSyncManager {
 
     const val DISCONNECT_EMOJI = "😶‍🌫️"
     const val DISCONNECT_LABEL = "Gone Offline"
+    const val NOT_CONNECTED_LABEL = "Partner is not connected yet"
 
     private lateinit var database: FirebaseDatabase
     private var pairsRef: DatabaseReference? = null
@@ -119,7 +120,7 @@ object FirebaseSyncManager {
                         lastReportedPartnerPresence = false
                         onStatusChanged(false, "Waiting for your partner to connect…")
                     }
-                    onFriendMoodChangedCallback?.invoke("", "Partner is not connected yet", 0L)
+                    onFriendMoodChangedCallback?.invoke("", NOT_CONNECTED_LABEL, 0L)
                     return
                 }
 
@@ -140,10 +141,10 @@ object FirebaseSyncManager {
                 }
 
                 if (partner == null) {
-                    if (lastFriendEmoji != "" || lastFriendLabel != "Partner is not connected yet") {
+                    if (lastFriendEmoji != "" || lastFriendLabel != NOT_CONNECTED_LABEL) {
                         lastFriendEmoji = ""
-                        lastFriendLabel = "Partner is not connected yet"
-                        onFriendMoodChangedCallback?.invoke("", "Partner is not connected yet", 0L)
+                        lastFriendLabel = NOT_CONNECTED_LABEL
+                        onFriendMoodChangedCallback?.invoke("", NOT_CONNECTED_LABEL, 0L)
                     }
                     return
                 }
