@@ -9,7 +9,8 @@ import com.airbnb.lottie.LottieAnimationView
 
 /**
  * Displays a single emoji, preferring an animated (Lottie) version when
- * one is bundled for it, and falling back to plain static text otherwise.
+ * one is bundled for it and the Animated Emoji setting is on, and falling
+ * back to plain static text otherwise.
  */
 class EmojiView @JvmOverloads constructor(
     context: Context,
@@ -27,7 +28,11 @@ class EmojiView @JvmOverloads constructor(
     }
 
     fun setEmoji(emoji: String) {
-        val assetPath = EmojiLottieMap.assetFor(context, emoji)
+        val assetPath = if (AppSettings.getAnimatedEmojiEnabled(context)) {
+            EmojiLottieMap.assetFor(context, emoji)
+        } else {
+            null
+        }
         if (assetPath != null) {
             fallbackText.visibility = INVISIBLE
             lottieView.visibility = VISIBLE
