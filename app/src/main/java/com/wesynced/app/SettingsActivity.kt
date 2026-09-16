@@ -17,6 +17,25 @@ class SettingsActivity : AppCompatActivity() {
         binding.toolbarSettings.setNavigationOnClickListener { finish() }
 
         setupThemeToggle()
+        setupAnimatedEmojiToggle()
+    }
+
+    private fun setupAnimatedEmojiToggle() {
+        binding.switchAnimatedEmoji.isChecked = AppSettings.getAnimatedEmojiEnabled(this)
+        updateAnimatedEmojiStatusLabel(binding.switchAnimatedEmoji.isChecked)
+
+        binding.switchAnimatedEmoji.setOnCheckedChangeListener { _, isChecked ->
+            AppSettings.setAnimatedEmojiEnabled(this, isChecked)
+            updateAnimatedEmojiStatusLabel(isChecked)
+        }
+    }
+
+    private fun updateAnimatedEmojiStatusLabel(isEnabled: Boolean) {
+        binding.tvAnimatedEmojiStatus.text = if (isEnabled) {
+            getString(R.string.settings_animated_emoji_on)
+        } else {
+            getString(R.string.settings_animated_emoji_off)
+        }
     }
 
     private fun setupThemeToggle() {
