@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentPairingId: String? = null
     private var selectedMoodEmoji: String = "♥️"
-    private lateinit var customSlotViews: List<Pair<MaterialCardView, TextView>>
+    private lateinit var customSlotViews: List<Pair<MaterialCardView, EmojiView>>
 
     private var isAppInForeground = false
     private var friendLastUpdateMillis: Long = 0L
@@ -329,23 +329,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupEmojiClickListeners() {
-        val emojiButtons = listOf(
-            binding.btnMoodHappy to "♥️",
-            binding.btnMoodSleepy to "🥺",
-            binding.btnMoodPopcorn to "🙄",
-            binding.btnMoodGrumpy to "😞",
-            binding.btnMoodHeart to "🫩",
-            binding.btnMoodPartyTada to "🫦",
-            binding.btnMoodPartyFace to "💀",
-            binding.btnMoodCoffee to "😕"
-        )
+    val emojiButtons = listOf(
+        Triple(binding.btnMoodHappy, binding.ivMoodHappy, "♥️"),
+        Triple(binding.btnMoodSleepy, binding.ivMoodSleepy, "🥺"),
+        Triple(binding.btnMoodPopcorn, binding.ivMoodPopcorn, "🙄"),
+        Triple(binding.btnMoodGrumpy, binding.ivMoodGrumpy, "😞"),
+        Triple(binding.btnMoodHeart, binding.ivMoodHeart, "🫩"),
+        Triple(binding.btnMoodPartyTada, binding.ivMoodPartyTada, "🫦"),
+        Triple(binding.btnMoodPartyFace, binding.ivMoodPartyFace, "💀"),
+        Triple(binding.btnMoodCoffee, binding.ivMoodCoffee, "😕")
+    )
 
-        for ((button, emoji) in emojiButtons) {
-            button.setOnClickListener {
-                onMoodSelected(emoji, button)
-            }
+    for ((button, emojiView, emoji) in emojiButtons) {
+        emojiView.setEmoji(emoji)
+        button.setOnClickListener {
+            onMoodSelected(emoji, button)
         }
     }
+}
 
     private fun setupCustomMoodSlots() {
         customSlotViews = listOf(
@@ -407,19 +408,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyCustomMoodSlot(slotIndex: Int, emoji: String, label: String) {
-        moodCatalogue[emoji] = label
+    moodCatalogue[emoji] = label
 
-        val (card, textView) = customSlotViews[slotIndex]
-        textView.text = emoji
+    val (card, emojiView) = customSlotViews[slotIndex]
+    emojiView.setEmoji(emoji)
 
-        card.setOnClickListener {
-            if (selectedMoodEmoji == emoji) {
-                Toast.makeText(this, getString(R.string.custom_mood_tap_hold_hint), Toast.LENGTH_SHORT).show()
-            } else {
-                onMoodSelected(emoji, card)
-            }
+    card.setOnClickListener {
+        if (selectedMoodEmoji == emoji) {
+            Toast.makeText(this, getString(R.string.custom_mood_tap_hold_hint), Toast.LENGTH_SHORT).show()
+        } else {
+            onMoodSelected(emoji, card)
         }
     }
+}
 
     private fun onMoodSelected(emoji: String, clickedCard: MaterialCardView) {
         HapticHelper.triggerCalmPulse(this)
@@ -441,30 +442,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateLivePreview(emoji: String, animate: Boolean) {
-        binding.tvLivePreviewEmoji.text = emoji
-        binding.tvLivePreviewLabel.text =
-            moodCatalogue[emoji] ?: getString(R.string.custom_mood_fallback_label)
+    binding.tvLivePreviewEmoji.setEmoji(emoji)
+    binding.tvLivePreviewLabel.text =
+        moodCatalogue[emoji] ?: getString(R.string.custom_mood_fallback_label)
 
-        if (animate) {
-            bounceView(binding.cardLivePreviewContainer)
-        }
+    if (animate) {
+        bounceView(binding.cardLivePreviewContainer)
     }
+}
 
     private fun displayFriendMood(friendEmoji: String, friendLabel: String, timestampMillis: Long) {
-        binding.tvFriendEmoji.text = friendEmoji
-        binding.tvFriendStatus.text = friendLabel.ifBlank {
-            moodCatalogue[friendEmoji] ?: getString(R.string.custom_mood_fallback_label)
-        }
-
-        friendLastUpdateMillis = timestampMillis
-        refreshFriendLastUpdatedText()
-
-        bounceView(binding.cardPartnerStatus)
-
-        if (isAppInForeground) {
-            HapticHelper.triggerCalmPulse(this)
-        }
+    binding.tvFriendEmoji.setEmoji(friendEmoji)
+    binding.tvFriendStatus.text = friendLabel.ifBlank {
+        moodCatalogue[friendEmoji] ?: getString(R.string.custom_mood_fallback_label)
     }
+
+    friendLastUpdateMillis = timestampMillis
+    refreshFriendLastUpdatedText()
+
+    bounceView(binding.cardPartnerStatus)
+
+    if (isAppInForeground) {
+        HapticHelper.triggerCalmPulse(this)
+    }
+}
 
     private fun refreshFriendLastUpdatedText() {
         if (!::binding.isInitialized || friendLastUpdateMillis <= 0L) return
