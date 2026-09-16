@@ -13,7 +13,7 @@
     <color name="pastel_background">#0D0D0D</color>
     <color name="card_surface">#1A1A1A</color>
 
-    <!-- Primary accent -- used for buttons, links, and mood-card headers -->
+    <!-- Primary accent (used for buttons, links, and mood-card headers) -->
     <color name="pastel_purple">#CFCFCF</color>
     <color name="pastel_purple_dark">#F2F2F2</color>
 
