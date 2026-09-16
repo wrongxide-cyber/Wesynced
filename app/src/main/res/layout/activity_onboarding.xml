@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ViewFlipper
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/viewFlipperOnboarding"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pastel_background">
+
+    <!-- Slide 1 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp">
+
+        <com.wesynced.app.EmojiView
+            android:id="@+id/ivOnboardingSlide1Emoji"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/onboarding_slide1_title"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            android:layout_marginBottom="40dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOnboardingNext"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/onboarding_next"
+            android:textSize="15sp"
+            android:backgroundTint="@color/pastel_purple"
+            android:textColor="@android:color/white"
+            app:cornerRadius="14dp" />
+
+    </LinearLayout>
+
+    <!-- Slide 2 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp">
+
+        <com.wesynced.app.EmojiView
+            android:id="@+id/ivOnboardingSlide2Emoji"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/onboarding_slide2_title"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/onboarding_slide2_body"
+            android:textSize="17sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTurnOffBatterySaver"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/onboarding_battery_button"
+            android:textSize="15sp"
+            android:backgroundTint="@color/pastel_purple"
+            android:textColor="@android:color/white"
+            app:cornerRadius="14dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOnboardingSkip"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/onboarding_skip"
+            android:textSize="15sp"
+            android:textColor="@color/text_secondary" />
+
+    </LinearLayout>
+
+    <!-- Slide 3: lock instructions -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="28dp">
+
+            <!-- Cute, pleading/requesting animated emoji (glossy watery eyes) in
+                 place of a plain lock-and-key icon, per the onboarding spec. -->
+            <com.wesynced.app.EmojiView
+                android:id="@+id/ivOnboardingSlide3Emoji"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginBottom="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_slide3_title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:layout_marginBottom="14dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_slide3_intro"
+                android:textSize="15sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Significantly enlarged so the final instructions dominate the
+                 screen, and the container matches the screen background
+                 exactly for a seamless, borderless look. -->
+            <TextView
+                android:id="@+id/tvOnboardingLockSteps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/pastel_background"
+                android:padding="12dp"
+                android:textSize="26sp"
+                android:lineSpacingExtra="6dp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:layout_marginBottom="28dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOnboardingLockDone"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_slide3_button"
+                android:textSize="15sp"
+                android:backgroundTint="@color/pastel_purple"
+                android:textColor="@android:color/white"
+                app:cornerRadius="14dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</ViewFlipper>
