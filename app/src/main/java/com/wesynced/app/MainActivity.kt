@@ -64,6 +64,13 @@ class MainActivity : AppCompatActivity() {
     // by loadSavedPreferences()/connectToPair().
     private var pausedListenerPairingId: String? = null
 
+    // Tracks the Animated Emoji setting as last applied to the on-screen
+    // EmojiViews, so onResume() only reloads all the Lottie animations when
+    // this setting has actually changed (e.g. toggled in Settings) — instead
+    // of redundantly reloading every animation on every single app open,
+    // which is what was causing the stutter/lag right after launch.
+    private var lastAppliedAnimatedEmojiSetting: Boolean = false
+
     private val timeUpdateHandler = Handler(Looper.getMainLooper())
     private val timeUpdateRunnable = object : Runnable {
         override fun run() {
@@ -75,32 +82,11 @@ class MainActivity : AppCompatActivity() {
     // Floating emoji bubbles shown in the reserved space at the bottom
     // once pairing succeeds. Only ever a handful on screen at once.
     private val floatingEmojis = listOf(
-    "💌", "🥰", "😊", "🩷", "💗", "💖", "🫶", "🥹", "🤍", "🩵", "🩶", "🤎", "❤️‍🔥", "✨", "💫", "⭐", "🌟", "🪽", "💭", "💤",
-    "😇", "😚", "😻", "🙈", "🥳", "😌", "😍", "😘", "🤗", "🌸", "🌷", "🌻", "🌹", "🌺", "🌼", "💐", "🪷", "🌱", "🌿", "☘️",
-    "🍀", "🍃", "🍂", "🍁", "🍄", "🌵", "🌴", "🌲", "🌳", "🌾", "🪻", "☁️", "🌤️", "⛅", "🌧️", "🌩️", "❄️", "☃️", "🌊", "🌈",
-    "🌙", "🌛", "🌜", "☀️", "🌝", "🌞", "🔥", "💧", "🫧", "🕊️", "🦋", "🐝", "🐣", "🐥", "🐦", "🦩", "🦚", "🦜", "🦤", "🦢",
-    "🦄", "🐰", "🐻", "🧸", "🐼", "🐨", "🦊", "🐱", "🐶", "🐭", "🐹", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🙉", "🙊", "🐒",
-    "🐔", "🐧", "🦆", "🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🫏", "🫎", "🐛", "🐌", "🐞", "🐜", "🪲", "🪰", "🪱", "🦠", "🐾",
-    "🐬", "🐳", "🐋", "🦭", "🐟", "🐠", "🐡", "🦈", "🐙", "🪼", "🐚", "🪸", "🦀", "🦞", "🦐", "🦑", "🦥", "🍡", "🍭", "🍬",
-    "🍩", "🧁", "🍦", "🍧", "🍨", "🎂", "🍰", "🥧", "🍫", "🍿", "🍪", "🌰", "🥜", "🍯", "🥛", "☕", "🍵", "🧃", "🧋", "🍶",
-    "🍓", "🍒", "🍑", "🍎", "🍏", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🫐", "🍈", "🍍", "🥭", "🥝", "🍅", "🥑", "🍆", "🥔",
-    "🥕", "🌽", "🌶️", "🥒", "🥬", "🥦", "🧄", "🧅", "🥐", "🥯", "🍞", "🥖", "🥨", "🧀", "🍳", "🥞", "🧇", "🥓", "🥩", "🍗",
-    "🍖", "🌭", "🍔", "🍟", "🍕", "🥪", "🥙", "🧆", "🌮", "🌯", "🥗", "🥘", "🥫", "🍝", "🍜", "🍲", "🍛", "🎈", "🎉", "🎊",
-    "🪅", "🪄", "🔮", "🎀", "🎁", "🎗️", "🎟️", "🎫", "🎖️", "🏆", "🥇", "🥈", "🥉", "🏅", "👑", "💎", "💍", "🪆", "🏮", "🕯️",
-    "🪔", "📜", "📄", "📑", "📊", "📈", "📉", "✉️", "📧", "📦", "🏷️", "📮", "✏️", "✒️", "🎨", "🖌️", "🖍️", "🎭", "🎪", "🎤",
-    "🎧", "🎼", "🎵", "🎶", "🎷", "🪗", "🎸", "🎹", "🎺", "🎻", "🪕", "🥁", "🪘", "🎲", "🎯", "🎳", "🎮", "🎰", "🧩", "🪁",
-    "🧿", "🪬", "💜", "🖤", "💚", "💛", "🧡", "💙", "💓", "💞", "💕", "❣", "💔", "❤️‍🩹", "💘", "💝", "💟", "😀", "😃", "😄",
-    "😁", "😆", "😅", "😂", "🤣", "🥲", "☺️", "😋", "😛", "😜", "🤪", "😝", "🤑", "🤭", "🤫", "🤔", "🫡", "🤐", "🤨", "😐",
-    "😑", "😶", "🫥", "😏", "😒", "🙄", "😬", "😮‍💨", "🤥", "🫨", "🙂‍↔️", "🙂‍↕️", "😴", "😷", "🤒", "🤕", "🤢", "🤮", "🤧", "🥵",
-    "🥶", "🥴", "😵", "😵‍💫", "🤯", "🤠", "🥸", "😎", "🤓", "🧐", "😮", "😯", "😲", "😳", "😽", "🙀", "🦝", "🦦", "🦡", "🦫",
-    "🦨", "🦘", "🦛", "🦏", "🐪", "🐫", "🦒", "🐘", "🦣", "🐎", "🐖", "🐏", "🐑", "🐐", "🦌", "🐕", "🐩", "🦮", "🐕‍🦺", "🐈",
-    "🐈‍⬛", "🪶", "🐓", "🐊", "🐢", "🦎", "🐍", "🐲", "🐉", "🦕", "🦖", "🦗", "🪳", "🕷️", "🕸️", "🦂", "🦟", "💮", "🪴", "🪹",
-    "🪺", "🫒", "🥥", "🫑", "🫓", "🫔", "🥚", "🫕", "🥣", "🧈", "🧂", "🍱", "🍘", "🍙", "🍚", "🍠", "🍢", "🍣", "🍤", "🍥",
-    "🥮", "🥟", "🥠", "🥡", "🦪", "🍮", "🍼", "🫖", "🍾", "🍷", "🍸", "🍹", "🍺", "🍻", "🥂", "🥃", "🫗", "🥤", "🧉", "🧊",
-    "🥢", "🍽️", "🍴", "🥄", "🔪", "🏺", "⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉", "🥏", "🎱", "🪀", "🏓", "🏸", "🏒",
-    "🏑", "🏏", "🥍", "🏹", "🎣", "🤿", "🥊", "🥋", "🎽", "🛹", "🛼", "🛷", "⛸️", "🥌", "🎿", "🧗", "🤺", "🏇", "🏋️", "🤸",
-    "🤼", "🤽", "🤾", "🧗‍♀️", "🧘", "🎬", "♟️", "🚗", "🚕", "🚙", "🚌"
-)
+        "💌", "✨", "🌸", "💫", "🎈", "🕊️", "🌷", "☁️", "💜", "🍡",
+        "🌟", "🦋", "🌺", "🌼", "🍭", "🧸", "🌙", "⭐", "🌈", "🍬",
+        "🐝", "🐣", "🌻", "🍓", "🎀", "💐", "🪅", "🌊", "🍀", "🦢",
+        "🐥", "🌹", "🍥", "🥰", "😊", "🩷", "💗", "💖", "🫶", "🌱",
+        "🍒", "🍑", "🦄", "🐰", "🐻", "🍩", "🧁", "🍦", "🎉", "🪄"
     )
     private val activeBubbles = mutableListOf<View>()
     private val bubbleHandler = Handler(Looper.getMainLooper())
@@ -146,6 +132,10 @@ class MainActivity : AppCompatActivity() {
         loadSavedPreferences()
         setupEmojiClickListeners()
         setupCustomMoodSlots()
+        // The calls above already apply every emoji with the current setting,
+        // so record it now — the first onResume() right after this shouldn't
+        // reload everything a second time.
+        lastAppliedAnimatedEmojiSetting = AppSettings.getAnimatedEmojiEnabled(this)
     }
 
     override fun onResume() {
@@ -164,7 +154,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 showStaticMoodLabels()
             }
-            refreshEmojiDisplayMode()
+            // Only reload every Lottie animation when the Animated Emoji
+            // setting has actually changed since it was last applied (e.g.
+            // the user toggled it in Settings and came back) — not on every
+            // plain resume, which was causing all animations to reload
+            // (and stutter) on every single app open.
+            val animatedEmojiEnabled = AppSettings.getAnimatedEmojiEnabled(this)
+            if (animatedEmojiEnabled != lastAppliedAnimatedEmojiSetting) {
+                lastAppliedAnimatedEmojiSetting = animatedEmojiEnabled
+                refreshEmojiDisplayMode()
+            }
         }
     }
 
