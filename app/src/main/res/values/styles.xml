@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.WeSynced.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/pastel_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_inset</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/pastel_rose_soft</item>
-        <item name="postSplashScreenTheme">@style/Theme.WeSynced</item>
-    </style>
-</resources>
