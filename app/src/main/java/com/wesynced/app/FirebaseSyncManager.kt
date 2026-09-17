@@ -23,6 +23,7 @@ object FirebaseSyncManager {
 
     const val DISCONNECT_EMOJI = "😶‍🌫️"
     const val DISCONNECT_LABEL = "Gone Offline"
+    const val NOT_CONNECTED_LABEL = "Partner is not connected yet"
 
     private lateinit var database: FirebaseDatabase
     private var pairsRef: DatabaseReference? = null
@@ -35,6 +36,7 @@ object FirebaseSyncManager {
     // Guards against repeated "connected" notifications and repeated
     // bounce/UI updates when nothing has actually changed.
     private var hasNotifiedConnected = false
+    private var lastReportedPartnerPresence: Boolean? = null
     private var lastFriendEmoji: String? = null
     private var lastFriendLabel: String? = null
 
@@ -103,6 +105,7 @@ object FirebaseSyncManager {
         activePairingId = cleanId
         onFriendMoodChangedCallback = onFriendMoodChanged
         hasNotifiedConnected = false
+        lastReportedPartnerPresence = null
         lastFriendEmoji = null
         lastFriendLabel = null
 
@@ -111,35 +114,58 @@ object FirebaseSyncManager {
 
         currentPairListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                // Only fire the "connected" callback (and thus the toast + initial
-                // mood push in MainActivity) ONCE per connection — not on every
-                // subsequent data change under this reference.
-                if (!hasNotifiedConnected) {
-                    hasNotifiedConnected = true
-                    onStatusChanged(true, "Connected to pair $cleanId")
+                if (!snapshot.exists()) {
+                    hasNotifiedConnected = false
+                    if (lastReportedPartnerPresence != false) {
+                        lastReportedPartnerPresence = false
+                        onStatusChanged(false, "Waiting for your partner to connect…")
+                    }
+                    onFriendMoodChangedCallback?.invoke("", NOT_CONNECTED_LABEL, 0L)
+                    return
                 }
 
-                if (!snapshot.exists()) return
+                // Joining a Pairing ID and having a live partner are separate states.
+                // The room stays joined even when the partner is offline. Only a
+                // partner with presence=true counts as a successful live pairing.
+                val partner = snapshot.children.firstOrNull { it.key != null && it.key != myDeviceId }
+                val partnerPresent = partner?.child("presence")?.getValue(Boolean::class.java) == true
 
-                // Iterate over connected members in this pairing room
-                for (memberSnapshot in snapshot.children) {
-                    val memberKey = memberSnapshot.key ?: continue
+                if (lastReportedPartnerPresence != partnerPresent) {
+                    lastReportedPartnerPresence = partnerPresent
+                    hasNotifiedConnected = partnerPresent
+                    onStatusChanged(
+                        partnerPresent,
+                        if (partnerPresent) "Connected to pair $cleanId"
+                        else "Waiting for your partner to connect…"
+                    )
+                }
 
-                    // Any member node that is NOT myDeviceId is our paired friend!
-                    if (memberKey != myDeviceId) {
-                        val friendEmoji = memberSnapshot.child("mood").getValue(String::class.java) ?: "♥️"
-                        val friendLabel = memberSnapshot.child("label").getValue(String::class.java) ?: ""
-                        val timestamp = memberSnapshot.child("timestamp").getValue(Long::class.java) ?: System.currentTimeMillis()
-
-                        // Only trigger the UI update (and bounce animation) if the
-                        // friend's emoji or custom text actually changed since last time.
-                        if (friendEmoji != lastFriendEmoji || friendLabel != lastFriendLabel) {
-                            lastFriendEmoji = friendEmoji
-                            lastFriendLabel = friendLabel
-                            Log.d(TAG, "Received partner mood update: $friendEmoji ($friendLabel) at $timestamp")
-                            onFriendMoodChangedCallback?.invoke(friendEmoji, friendLabel, timestamp)
-                        }
+                if (partner == null) {
+                    if (lastFriendEmoji != "" || lastFriendLabel != NOT_CONNECTED_LABEL) {
+                        lastFriendEmoji = ""
+                        lastFriendLabel = NOT_CONNECTED_LABEL
+                        onFriendMoodChangedCallback?.invoke("", NOT_CONNECTED_LABEL, 0L)
                     }
+                    return
+                }
+
+                // The mood/label shown always comes straight from the partner's node,
+                // regardless of live presence. "presence" only reflects whether their
+                // socket is currently connected (it flips to false automatically via
+                // onDisconnect() when they lose internet or the app is backgrounded),
+                // and that alone should never overwrite the displayed mood. The only
+                // way the emoji/label become "Gone Offline" is if disconnectManually()
+                // actually wrote DISCONNECT_EMOJI/DISCONNECT_LABEL into this node,
+                // which only happens when the partner explicitly taps Disconnect.
+                val friendEmoji = partner.child("mood").getValue(String::class.java).orEmpty().ifBlank { "♥️" }
+                val friendLabel = partner.child("label").getValue(String::class.java).orEmpty()
+                val timestamp = partner.child("timestamp").getValue(Long::class.java) ?: 0L
+
+                if (friendEmoji != lastFriendEmoji || friendLabel != lastFriendLabel) {
+                    lastFriendEmoji = friendEmoji
+                    lastFriendLabel = friendLabel
+                    Log.d(TAG, "Partner state: present=$partnerPresent, mood=$friendEmoji ($friendLabel)")
+                    onFriendMoodChangedCallback?.invoke(friendEmoji, friendLabel, timestamp)
                 }
             }
 
@@ -150,6 +176,22 @@ object FirebaseSyncManager {
         }
 
         pairRef.addValueEventListener(currentPairListener!!)
+
+        // Publish this device immediately. This creates the member entry even when
+        // the partner is offline, allowing the partner to discover the pairing.
+        val myNode = pairRef.child(myDeviceId)
+        // Presence is separate from the last mood. Realtime Database will set
+        // it to false automatically if this device loses its connection.
+        myNode.child("presence").onDisconnect().setValue(false)
+        myNode.updateChildren(
+            mapOf(
+                "mood" to "♥️",
+                "label" to "Safe and Sound",
+                "timestamp" to ServerValue.TIMESTAMP,
+                "deviceId" to myDeviceId,
+                "presence" to true
+            )
+        )
     }
 
     /**
@@ -167,10 +209,11 @@ object FirebaseSyncManager {
             "mood" to emoji,
             "label" to label,
             "timestamp" to ServerValue.TIMESTAMP,
-            "deviceId" to myDeviceId
+            "deviceId" to myDeviceId,
+            "presence" to true
         )
 
-        myNode.setValue(data).addOnSuccessListener {
+        myNode.updateChildren(data).addOnSuccessListener {
             Log.d(TAG, "Successfully synced my mood: $emoji ($label) to pair $pairingId")
         }.addOnFailureListener { e ->
             Log.e(TAG, "Failed to sync mood: ${e.message}")
@@ -201,6 +244,7 @@ object FirebaseSyncManager {
         activePairingId = null
         onFriendMoodChangedCallback = null
         hasNotifiedConnected = false
+        lastReportedPartnerPresence = null
         lastFriendEmoji = null
         lastFriendLabel = null
     }
@@ -219,7 +263,8 @@ object FirebaseSyncManager {
                 mapOf(
                     "mood" to DISCONNECT_EMOJI,
                     "label" to DISCONNECT_LABEL,
-                    "timestamp" to ServerValue.TIMESTAMP
+                    "timestamp" to ServerValue.TIMESTAMP,
+                    "presence" to false
                 )
             )
         }

@@ -12,7 +12,7 @@
     android:paddingEnd="20dp"
     android:paddingTop="16dp"
     android:paddingBottom="22dp"
-    android:background="@color/pastel_purple">
+    android:background="@color/card_surface">
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:text="@string/app_name"
         android:textSize="34sp"
         android:textStyle="bold"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,6 +28,6 @@
         android:layout_marginTop="2dp"
         android:text="@string/app_tagline"
         android:textSize="15sp"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/text_primary" />
 
 </LinearLayout>

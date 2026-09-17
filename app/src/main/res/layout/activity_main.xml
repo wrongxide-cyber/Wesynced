@@ -224,10 +224,10 @@
                     android:layout_marginBottom="22dp">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
+                        android:layout_weight="0"
+                        android:layout_marginEnd="0dp"
                         android:orientation="vertical">
 
                         <TextView
@@ -260,20 +260,11 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent" />
 
-                                <com.google.android.material.card.MaterialCardView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/tvLivePreviewEmoji"
                                     android:layout_width="88dp"
                                     android:layout_height="88dp"
-                                    android:layout_gravity="center"
-                                    app:cardCornerRadius="44dp"
-                                    app:cardElevation="0dp"
-                                    app:cardBackgroundColor="@color/pastel_peach_light"
-                                    app:strokeWidth="0dp">
-
-                                    <com.wesynced.app.EmojiView
-                                        android:id="@+id/tvLivePreviewEmoji"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent" />
-                                </com.google.android.material.card.MaterialCardView>
+                                    android:layout_gravity="center" />
 
                             </FrameLayout>
                         </com.google.android.material.card.MaterialCardView>
@@ -283,9 +274,10 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
+                        android:layout_weight="0"
+                        android:layout_marginStart="0dp"
                         android:orientation="vertical"
+                        android:visibility="gone"
                         android:id="@+id/columnPartnerStatus">
 
                         <TextView
@@ -320,20 +312,11 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent" />
 
-                                <com.google.android.material.card.MaterialCardView
+                                <com.wesynced.app.EmojiView
+                                    android:id="@+id/tvFriendEmoji"
                                     android:layout_width="88dp"
                                     android:layout_height="88dp"
-                                    android:layout_gravity="center"
-                                    app:cardCornerRadius="44dp"
-                                    app:cardElevation="0dp"
-                                    app:cardBackgroundColor="@color/pastel_lavender_light"
-                                    app:strokeWidth="0dp">
-
-                                    <com.wesynced.app.EmojiView
-                                        android:id="@+id/tvFriendEmoji"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent" />
-                                </com.google.android.material.card.MaterialCardView>
+                                    android:layout_gravity="center" />
 
                             </FrameLayout>
                         </com.google.android.material.card.MaterialCardView>
@@ -657,7 +640,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <!-- Branding header: everything else in this menu lives below it -->
@@ -828,6 +811,38 @@
                 </LinearLayout>
             </LinearLayout>
 
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="22dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WeSynced"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Version 3.0.3"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary" />
             </LinearLayout>
 
         </LinearLayout>

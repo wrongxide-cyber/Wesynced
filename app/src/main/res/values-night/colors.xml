@@ -10,7 +10,7 @@
 -->
 <resources>
 
-    <color name="pastel_background">#0D0D0D</color>
+    <color name="pastel_background">#000000</color>
     <color name="card_surface">#1A1A1A</color>
 
     <!-- Primary accent (used for buttons, links, and mood-card headers) -->
