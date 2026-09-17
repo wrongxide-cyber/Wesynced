@@ -846,7 +846,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:text="Version 3.0.4"
+                    android:text="Version 3.1.2"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
