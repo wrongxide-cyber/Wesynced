@@ -57,6 +57,13 @@ class MainActivity : AppCompatActivity() {
     private var isAppInForeground = false
     private var friendLastUpdateMillis: Long = 0L
 
+    // Set in onStop() when a live Firebase listener was detached for battery
+    // savings while the app was fully backgrounded, so onStart() knows to
+    // silently re-attach it. Stays null otherwise (e.g. right after onCreate),
+    // so it never triggers an extra reconnect on top of the one already done
+    // by loadSavedPreferences()/connectToPair().
+    private var pausedListenerPairingId: String? = null
+
     private val timeUpdateHandler = Handler(Looper.getMainLooper())
     private val timeUpdateRunnable = object : Runnable {
         override fun run() {
@@ -141,6 +148,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Every EmojiView currently on screen (static mood buttons, custom slots,
+     * the live preview, and the friend's mood), gathered so their Lottie
+     * animations can be paused/resumed together with the activity lifecycle.
+     */
+    private fun allEmojiViews(): List<EmojiView> {
+        val views = mutableListOf<EmojiView>()
+        if (::staticMoodEmojis.isInitialized) {
+            views.addAll(staticMoodEmojis.map { it.first })
+        }
+        if (::customSlotViews.isInitialized) {
+            views.addAll(customSlotViews.map { it.second })
+        }
+        if (::binding.isInitialized) {
+            views.add(binding.tvLivePreviewEmoji)
+            views.add(binding.tvFriendEmoji)
+        }
+        return views
+    }
+
+    /**
+     * Stops looping Lottie animations while the activity isn't visible, so
+     * they don't keep redrawing/consuming CPU in the background.
+     */
+    private fun pauseAllEmojiAnimations() {
+        allEmojiViews().forEach { it.pauseAnimation() }
+    }
+
+    /**
      * Re-applies every currently-shown emoji through EmojiView.setEmoji(),
      * so toggling "Animated Emoji" in Settings takes effect immediately on
      * returning here, instead of requiring a full app restart.
@@ -171,6 +206,42 @@ class MainActivity : AppCompatActivity() {
         timeUpdateHandler.removeCallbacks(timeUpdateRunnable)
         pauseFloatingBubbles()
         stopLabelTwinkle()
+        pauseAllEmojiAnimations()
+    }
+
+    /**
+     * Silently re-attaches the live Firebase listener if it was detached in
+     * onStop() (e.g. the app is being brought back from the background).
+     * Does not touch any UI state — FirebaseSyncManager.connect() will fire
+     * onStatusChanged/onFriendMoodChanged on its own with the current data.
+     */
+    override fun onStart() {
+        super.onStart()
+        val pairingId = pausedListenerPairingId
+        if (pairingId != null) {
+            pausedListenerPairingId = null
+            attachFirebaseListener(pairingId, isManualConnect = false)
+        }
+    }
+
+    /**
+     * Detaches the live Firebase Realtime Database listener while the app is
+     * fully backgrounded (not just covered by a dialog or another activity
+     * within the app briefly — onStop covers both, and onStart above
+     * re-attaches either way). The app already receives mood updates while
+     * backgrounded via FCM push (see WeSyncedMessagingService), so keeping
+     * this extra always-on socket open too is unnecessary battery/network
+     * usage. The partner's last-known mood and this device's own status are
+     * untouched — only the live listener is removed, same as disconnect()
+     * already does for onDestroy().
+     */
+    override fun onStop() {
+        super.onStop()
+        if (isRoomJoined) {
+            val pairingId = currentPairingId
+            FirebaseSyncManager.disconnect()
+            pausedListenerPairingId = pairingId
+        }
     }
 
     private fun setupNavigationDrawer() {
@@ -316,6 +387,16 @@ class MainActivity : AppCompatActivity() {
         binding.cardDisconnect.visibility = View.VISIBLE
         binding.cardPairing.visibility = View.GONE
 
+        attachFirebaseListener(cleanPairingId, isManualConnect)
+    }
+
+    /**
+     * Attaches the live Firebase listener for a pairing ID. Split out from
+     * connectToPair() so it can also be used to silently re-attach the
+     * listener in onStart() after it was detached in onStop(), without
+     * re-running any of connectToPair()'s UI setup.
+     */
+    private fun attachFirebaseListener(cleanPairingId: String, isManualConnect: Boolean) {
         FirebaseSyncManager.connect(
             pairingId = cleanPairingId,
             onFriendMoodChanged = { friendEmoji, friendLabel, timestamp ->
