@@ -46,4 +46,26 @@ class EmojiView @JvmOverloads constructor(
             fallbackText.text = emoji
         }
     }
+
+    /**
+     * Pauses the Lottie animation (if one is currently showing) without
+     * losing its position, so it doesn't keep looping/consuming CPU while
+     * the screen holding it isn't visible (e.g. activity backgrounded).
+     * No-op when a plain static emoji is shown.
+     */
+    fun pauseAnimation() {
+        if (lottieView.visibility == VISIBLE) {
+            lottieView.pauseAnimation()
+        }
+    }
+
+    /**
+     * Resumes a previously paused Lottie animation from where it left off.
+     * No-op when a plain static emoji is shown.
+     */
+    fun resumeAnimation() {
+        if (lottieView.visibility == VISIBLE) {
+            lottieView.resumeAnimation()
+        }
+    }
 }
