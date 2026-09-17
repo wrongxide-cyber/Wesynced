@@ -41,12 +41,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentPairingId: String? = null
     private var isPartnerConnected = false
-    // Drives the marquee/twinkle animation and floating bubbles. Unlike
-    // isPartnerConnected (raw Firebase presence, which flips false the instant
-    // the partner's socket drops — backgrounded, screen off, weak signal),
-    // this only turns false when the partner's mood actually shows they
-    // tapped Disconnect, or they've never joined the room at all. A partner
-    // who is simply offline/backgrounded keeps their last mood animating.
     private var isPartnerMoodActive = false
     private var isRoomJoined = false
     private var selectedMoodEmoji: String = "♥️"
@@ -57,18 +51,8 @@ class MainActivity : AppCompatActivity() {
     private var isAppInForeground = false
     private var friendLastUpdateMillis: Long = 0L
 
-    // Set in onStop() when a live Firebase listener was detached for battery
-    // savings while the app was fully backgrounded, so onStart() knows to
-    // silently re-attach it. Stays null otherwise (e.g. right after onCreate),
-    // so it never triggers an extra reconnect on top of the one already done
-    // by loadSavedPreferences()/connectToPair().
     private var pausedListenerPairingId: String? = null
 
-    // Tracks the Animated Emoji setting as last applied to the on-screen
-    // EmojiViews, so onResume() only reloads all the Lottie animations when
-    // this setting has actually changed (e.g. toggled in Settings) — instead
-    // of redundantly reloading every animation on every single app open,
-    // which is what was causing the stutter/lag right after launch.
     private var lastAppliedAnimatedEmojiSetting: Boolean = false
 
     private val timeUpdateHandler = Handler(Looper.getMainLooper())
@@ -79,459 +63,52 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Floating emoji bubbles shown in the reserved space at the bottom
-    // once pairing succeeds. Only ever a handful on screen at once.
     private val floatingEmojis = listOf(
-        "💌",
-        "✨",
-        "🌸",
-        "💫",
-        "🎈",
-        "🕊️",
-        "🌷",
-        "☁️",
-        "💜",
-        "🍡",
-        "🌟",
-        "🦋",
-        "🌺",
-        "🌼",
-        "🍭",
-        "🧸",
-        "🌙",
-        "⭐",
-        "🌈",
-        "🍬",
-        "🐝",
-        "🐣",
-        "🌻",
-        "🍓",
-        "🎀",
-        "💐",
-        "🪅",
-        "🌊",
-        "🍀",
-        "🦢",
-        "🐥",
-        "🌹",
-        "🍥",
-        "🥰",
-        "😊",
-        "🩷",
-        "💗",
-        "💖",
-        "🫶",
-        "🌱",
-        "🍒",
-        "🍑",
-        "🦄",
-        "🐰",
-        "🐻",
-        "🍩",
-        "🧁",
-        "🍦",
-        "🎉",
-        "🪄",
-        "😀",
-        "😁",
-        "😂",
-        "😃",
-        "😄",
-        "😅",
-        "😆",
-        "😇",
-        "😈",
-        "😉",
-        "😋",
-        "😌",
-        "😍",
-        "😎",
-        "😏",
-        "😐",
-        "😑",
-        "😒",
-        "😓",
-        "😔",
-        "😕",
-        "😖",
-        "😗",
-        "😘",
-        "😙",
-        "😚",
-        "😛",
-        "😜",
-        "😝",
-        "😞",
-        "😟",
-        "😠",
-        "😡",
-        "😢",
-        "😣",
-        "😤",
-        "😥",
-        "😦",
-        "😧",
-        "😨",
-        "😩",
-        "😪",
-        "😫",
-        "😬",
-        "😭",
-        "😮",
-        "😯",
-        "😰",
-        "😱",
-        "😲",
-        "😳",
-        "😴",
-        "😵",
-        "😶",
-        "😷",
-        "🤐",
-        "🤑",
-        "🤓",
-        "🤔",
-        "🤕",
-        "🤗",
-        "🤭",
-        "🤫",
-        "🤥",
-        "🤢",
-        "🤧",
-        "🤨",
-        "🤩",
-        "🤪",
-        "🤬",
-        "🤯",
-        "🤠",
-        "🤡",
-        "🤣",
-        "🤤",
-        "🥳",
-        "🥺",
-        "🥹",
-        "🥲",
-        "🥴",
-        "🥵",
-        "🥶",
-        "🥸",
-        "🫠",
-        "🫡",
-        "🫢",
-        "🫣",
-        "🫤",
-        "🫥",
-        "🫦",
-        "🫨",
-        "🫰",
-        "🫵",
-        "🤌",
-        "🤏",
-        "🤘",
-        "🤙",
-        "🤚",
-        "🤛",
-        "🤜",
-        "🤝",
-        "🤟",
-        "🤲",
-        "🤳",
-        "👀",
-        "👁️",
-        "👂",
-        "👃",
-        "👅",
-        "👄",
-        "👋",
-        "🤞",
-        "✌️",
-        "🙌",
-        "👐",
-        "👏",
-        "👍",
-        "👎",
-        "👊",
-        "✊",
-        "💅",
-        "💪",
-        "🦾",
-        "🦿",
-        "🦵",
-        "🦶",
-        "👣",
-        "🧠",
-        "🫀",
-        "🫁",
-        "🦷",
-        "🦴",
-        "👑",
-        "💎",
-        "💍",
-        "👟",
-        "👠",
-        "🧢",
-        "🎩",
-        "🕶️",
-        "🧣",
-        "🧤",
-        "🧦",
-        "🎒",
-        "👜",
-        "👝",
-        "💼",
-        "🧳",
-        "☂️",
-        "🌂",
-        "🧵",
-        "🪡",
-        "🧶",
-        "🪢",
-        "🧥",
-        "👕",
-        "👖",
-        "👗",
-        "👔",
-        "👚",
-        "👒",
-        "🩳",
-        "🩱",
-        "👙",
-        "👘",
-        "🥻",
-        "🦺",
-        "👞",
-        "🥾",
-        "🥿",
-        "👢",
-        "🩴",
-        "🪆",
-        "🪞",
-        "🪮",
-        "🧴",
-        "🧷",
-        "🧹",
-        "🧺",
-        "🧼",
-        "🪥",
-        "🧽",
-        "🪒",
-        "🧻",
-        "🛁",
-        "🚿",
-        "🛏️",
-        "🪑",
-        "🚪",
-        "🪟",
-        "🛋️",
-        "🧯",
-        "🛒",
-        "🛍️",
-        "🎁",
-        "🎊",
-        "🎂",
-        "🍰",
-        "🍪",
-        "🍫",
-        "🍮",
-        "🍯",
-        "🥛",
-        "🍼",
-        "🧃",
-        "🥤",
-        "🧋",
-        "☕",
-        "🍵",
-        "🫖",
-        "🥣",
-        "🍚",
-        "🍙",
-        "🍘",
-        "🍜",
-        "🍝",
-        "🍛",
-        "🍲",
-        "🥘",
-        "🥗",
-        "🥙",
-        "🌮",
-        "🌯",
-        "🥪",
-        "🍔",
-        "🍟",
-        "🍕",
-        "🌭",
-        "🥨",
-        "🧀",
-        "🥞",
-        "🧇",
-        "🥓",
-        "🥩",
-        "🍗",
-        "🍖",
-        "🍤",
-        "🦐",
-        "🦑",
-        "🐙",
-        "🥚",
-        "🍳",
-        "🧈",
-        "🥖",
-        "🥐",
-        "🍞",
-        "🥯",
-        "🥑",
-        "🥦",
-        "🥬",
-        "🥒",
-        "🫑",
-        "🌶️",
-        "🫒",
-        "🌽",
-        "🥕",
-        "🧄",
-        "🧅",
-        "🥔",
-        "🍠",
-        "🫛",
-        "🫘",
-        "🍅",
-        "🍆",
-        "🍄",
-        "🍎",
-        "🍏",
-        "🍐",
-        "🍊",
-        "🍋",
-        "🍌",
-        "🍉",
-        "🍇",
-        "🫐",
-        "🍈",
-        "🥭",
-        "🍍",
-        "🥥",
-        "🥝",
-        "🥜",
-        "🌰",
-        "🌿",
-        "☘️",
-        "🍃",
-        "🍂",
-        "🍁",
-        "🌾",
-        "🌵",
-        "🌴",
-        "🌳",
-        "🌲",
-        "🪷",
-        "🪻",
-        "🌞",
-        "🌝",
-        "🌛",
-        "🌜",
-        "🌚",
-        "🌤️",
-        "⛅",
-        "🌥️",
-        "🌦️",
-        "🌧️",
-        "⛈️",
-        "🌩️",
-        "🌨️",
-        "❄️",
-        "☃️",
-        "⛄",
-        "🌬️",
-        "💨",
-        "💧",
-        "💦",
-        "🔥",
-        "🌀",
-        "🌪️",
-        "🌫️",
-        "🌍",
-        "🌎",
-        "🌏",
-        "🌕",
-        "🌖",
-        "🌗",
-        "🌘",
-        "🌑",
-        "🌒",
-        "🌓",
-        "🌔",
-        "🌅",
-        "🌄",
-        "🌇",
-        "🌆",
-        "🌃",
-        "🏞️",
-        "🏝️",
-        "🏜️",
-        "🏕️",
-        "🏡",
-        "🏠",
-        "🏢",
-        "🏰",
-        "🏯",
-        "🗼",
-        "🎡",
-        "🎢",
-        "🎠",
-        "🎪",
-        "🛝",
-        "🎭",
-        "🎨",
-        "🖼️",
-        "🎬",
-        "🎤",
-        "🎧",
-        "🎼",
-        "🎹",
-        "🥁",
-        "🎷",
-        "🎺",
-        "🎸",
-        "🎻",
-        "🪕",
-        "🎙️",
-        "🎚️",
-        "🎛️",
-        "🎵",
-        "🎶",
-        "🎮",
-        "🕹️",
-        "🎲",
-        "♟️",
-        "🧩",
-        "🪀",
-        "🪁",
-        "🎯",
-        "🎳",
-        "🎱",
-        "🪩",
-        "🎰",
-        "🏆",
-        "🥇",
-        "🥈",
-        "🥉",
-        "🏅",
-        "🎖️",
-        "🏀",
-        "🏈",
-        "⚽",
-        "⚾",
-        "🥎",
-        "🎾",
-        "🏐",
-        "🏉",
-        "🥏",
-        "🪃",
-        "🏓",
-        "🏸",
-        "🏒",
-        "🏑",
-        "🥍"
+        "💌", "✨", "🌸", "💫", "🎈", "🕊️", "🌷", "☁️", "💜", "🍡",
+        "🌟", "🦋", "🌺", "🌼", "🍭", "🧸", "🌙", "⭐", "🌈", "🍬",
+        "🐝", "🐣", "🌻", "🍓", "🎀", "💐", "🪅", "🌊", "🍀", "🦢",
+        "🐥", "🌹", "🍥", "🥰", "😊", "🩷", "💗", "💖", "🫶", "🌱",
+        "🍒", "🍑", "🦄", "🐰", "🐻", "🍩", "🧁", "🍦", "🎉", "🪄",
+        "😀", "😁", "😂", "😃", "😄", "😅", "😆", "😇", "😈", "😉",
+        "😋", "😌", "😍", "😎", "😏", "😐", "😑", "😒", "😓", "😔",
+        "😕", "😖", "😗", "😘", "😙", "😚", "😛", "😜", "😝", "😞",
+        "😟", "😠", "😡", "😢", "😣", "😤", "😥", "😦", "😧", "😨",
+        "😩", "😪", "😫", "😬", "😭", "😮", "😯", "😰", "😱", "😲",
+        "😳", "😴", "😵", "😶", "😷", "🤐", "🤑", "🤓", "🤔", "🤕",
+        "🤗", "🤭", "🤫", "🤥", "🤢", "🤧", "🤨", "🤩", "🤪", "🤬",
+        "🤯", "🤠", "🤡", "🤣", "🤤", "🥳", "🥺", "🥹", "🥲", "🥴",
+        "🥵", "🥶", "🥸", "🫠", "🫡", "🫢", "🫣", "🫤", "🫥", "🫦",
+        "🫨", "🫰", "🫵", "🤌", "🤏", "🤘", "🤙", "🤚", "🤛", "🤜",
+        "🤝", "🤟", "🤲", "🤳", "👀", "👁️", "👂", "👃", "👅", "👄",
+        "👋", "🤞", "✌️", "🙌", "👐", "👏", "👍", "👎", "👊", "✊",
+        "💅", "💪", "🦾", "🦿", "🦵", "🦶", "👣", "🧠", "🫀", "🫁",
+        "🦷", "🦴", "👑", "💎", "💍", "👟", "👠", "🧢", "🎩", "🕶️",
+        "🧣", "🧤", "🧦", "🎒", "👜", "👝", "💼", "🧳", "☂️", "🌂",
+        "🧵", "🪡", "🧶", "🪢", "🧥", "👕", "👖", "👗", "👔", "👚",
+        "👒", "🩳", "🩱", "👙", "👘", "🥻", "🦺", "👞", "🥾", "🥿",
+        "👢", "🩴", "🪆", "🪞", "🪮", "🧴", "🧷", "🧹", "🧺", "🧼",
+        "🪥", "🧽", "🪒", "🧻", "🛁", "🚿", "🛏️", "🪑", "🚪", "🪟",
+        "🛋️", "🧯", "🛒", "🛍️", "🎁", "🎊", "🎂", "🍰", "🍪", "🍫",
+        "🍮", "🍯", "🥛", "🍼", "🧃", "🥤", "🧋", "☕", "🍵", "🫖",
+        "🥣", "🍚", "🍙", "🍘", "🍜", "🍝", "🍛", "🍲", "🥘", "🥗",
+        "🥙", "🌮", "🌯", "🥪", "🍔", "🍟", "🍕", "🌭", "🥨", "🧀",
+        "🥞", "🧇", "🥓", "🥩", "🍗", "🍖", "🍤", "🦐", "🦑", "🐙",
+        "🥚", "🍳", "🧈", "🥖", "🥐", "🍞", "🥯", "🥑", "🥦", "🥬",
+        "🥒", "🫑", "🌶️", "🫒", "🌽", "🥕", "🧄", "🧅", "🥔", "🍠",
+        "🫛", "🫘", "🍅", "🍆", "🍄", "🍎", "🍏", "🍐", "🍊", "🍋",
+        "🍌", "🍉", "🍇", "🫐", "🍈", "🥭", "🍍", "🥥", "🥝", "🥜",
+        "🌰", "🌿", "☘️", "🍃", "🍂", "🍁", "🌾", "🌵", "🌴", "🌳",
+        "🌲", "🪷", "🪻", "🌞", "🌝", "🌛", "🌜", "🌚", "🌤️", "⛅",
+        "🌥️", "🌦️", "🌧️", "⛈️", "🌩️", "🌨️", "❄️", "☃️", "⛄", "🌬️",
+        "💨", "💧", "💦", "🔥", "🌀", "🌪️", "🌫️", "🌍", "🌎", "🌏",
+        "🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔", "🌅", "🌄",
+        "🌇", "🌆", "🌃", "🏞️", "🏝️", "🏜️", "🏕️", "🏡", "🏠", "🏢",
+        "🏰", "🏯", "🗼", "🎡", "🎢", "🎠", "🎪", "🛝", "🎭", "🎨",
+        "🖼️", "🎬", "🎤", "🎧", "🎼", "🎹", "🥁", "🎷", "🎺", "🎸",
+        "🎻", "🪕", "🎙️", "🎚️", "🎛️", "🎵", "🎶", "🎮", "🕹️", "🎲",
+        "♟️", "🧩", "🪀", "🪁", "🎯", "🎳", "🎱", "🪩", "🎰", "🏆",
+        "🥇", "🥈", "🥉", "🏅", "🎖️", "🏀", "🏈", "⚽", "⚾", "🥎",
+        "🎾", "🏐", "🏉", "🥏", "🪃", "🏓", "🏸", "🏒", "🏑", "🥍"
     )
     private val activeBubbles = mutableListOf<View>()
     private val bubbleHandler = Handler(Looper.getMainLooper())
@@ -577,9 +154,6 @@ class MainActivity : AppCompatActivity() {
         loadSavedPreferences()
         setupEmojiClickListeners()
         setupCustomMoodSlots()
-        // The calls above already apply every emoji with the current setting,
-        // so record it now — the first onResume() right after this shouldn't
-        // reload everything a second time.
         lastAppliedAnimatedEmojiSetting = AppSettings.getAnimatedEmojiEnabled(this)
     }
 
@@ -599,24 +173,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 showStaticMoodLabels()
             }
-            // Only reload every Lottie animation when the Animated Emoji
-            // setting has actually changed since it was last applied (e.g.
-            // the user toggled it in Settings and came back) — not on every
-            // plain resume, which was causing all animations to reload
-            // (and stutter) on every single app open.
             val animatedEmojiEnabled = AppSettings.getAnimatedEmojiEnabled(this)
             if (animatedEmojiEnabled != lastAppliedAnimatedEmojiSetting) {
                 lastAppliedAnimatedEmojiSetting = animatedEmojiEnabled
                 refreshEmojiDisplayMode()
+            } else {
+                resumeAllEmojiAnimations()
             }
         }
     }
 
-    /**
-     * Every EmojiView currently on screen (static mood buttons, custom slots,
-     * the live preview, and the friend's mood), gathered so their Lottie
-     * animations can be paused/resumed together with the activity lifecycle.
-     */
     private fun allEmojiViews(): List<EmojiView> {
         val views = mutableListOf<EmojiView>()
         if (::staticMoodEmojis.isInitialized) {
@@ -632,19 +198,14 @@ class MainActivity : AppCompatActivity() {
         return views
     }
 
-    /**
-     * Stops looping Lottie animations while the activity isn't visible, so
-     * they don't keep redrawing/consuming CPU in the background.
-     */
     private fun pauseAllEmojiAnimations() {
         allEmojiViews().forEach { it.pauseAnimation() }
     }
 
-    /**
-     * Re-applies every currently-shown emoji through EmojiView.setEmoji(),
-     * so toggling "Animated Emoji" in Settings takes effect immediately on
-     * returning here, instead of requiring a full app restart.
-     */
+    private fun resumeAllEmojiAnimations() {
+        allEmojiViews().forEach { it.resumeAnimation() }
+    }
+
     private fun refreshEmojiDisplayMode() {
         if (::staticMoodEmojis.isInitialized) {
             for ((emojiView, emoji) in staticMoodEmojis) {
@@ -674,12 +235,6 @@ class MainActivity : AppCompatActivity() {
         pauseAllEmojiAnimations()
     }
 
-    /**
-     * Silently re-attaches the live Firebase listener if it was detached in
-     * onStop() (e.g. the app is being brought back from the background).
-     * Does not touch any UI state — FirebaseSyncManager.connect() will fire
-     * onStatusChanged/onFriendMoodChanged on its own with the current data.
-     */
     override fun onStart() {
         super.onStart()
         val pairingId = pausedListenerPairingId
@@ -689,17 +244,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Detaches the live Firebase Realtime Database listener while the app is
-     * fully backgrounded (not just covered by a dialog or another activity
-     * within the app briefly — onStop covers both, and onStart above
-     * re-attaches either way). The app already receives mood updates while
-     * backgrounded via FCM push (see WeSyncedMessagingService), so keeping
-     * this extra always-on socket open too is unnecessary battery/network
-     * usage. The partner's last-known mood and this device's own status are
-     * untouched — only the live listener is removed, same as disconnect()
-     * already does for onDestroy().
-     */
     override fun onStop() {
         super.onStop()
         if (isRoomJoined) {
@@ -710,8 +254,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavigationDrawer() {
-        // Keep the drawer's branding header clear of the status bar on every
-        // device, regardless of how each Android version draws system bars.
         ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { view, insets ->
             val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             view.updatePadding(top = statusBarTop)
@@ -821,8 +363,6 @@ class MainActivity : AppCompatActivity() {
         showUnpairedMoodImmediately()
 
         if (!savedId.isNullOrEmpty()) {
-            // Restore the room id, but keep the single-card layout until Firebase
-            // confirms that another device is actually present in the room.
             binding.etPairingId.setText(savedId)
             currentPairingId = savedId
             connectToPair(savedId, isManualConnect = false)
@@ -842,8 +382,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnConnect.isEnabled = false
         binding.btnConnect.text = "Connecting..."
 
-        // Joining a room always creates the two-tile layout. The partner tile
-        // remains visible while waiting; only a live partner enables the marquee.
         ensureJoinedMoodLayout()
         showStaticMoodLabels()
         displayWaitingForPartner()
@@ -855,12 +393,6 @@ class MainActivity : AppCompatActivity() {
         attachFirebaseListener(cleanPairingId, isManualConnect)
     }
 
-    /**
-     * Attaches the live Firebase listener for a pairing ID. Split out from
-     * connectToPair() so it can also be used to silently re-attach the
-     * listener in onStart() after it was detached in onStop(), without
-     * re-running any of connectToPair()'s UI setup.
-     */
     private fun attachFirebaseListener(cleanPairingId: String, isManualConnect: Boolean) {
         FirebaseSyncManager.connect(
             pairingId = cleanPairingId,
@@ -870,10 +402,6 @@ class MainActivity : AppCompatActivity() {
                     displayFriendMood(friendEmoji, friendLabel, timestamp)
                     MoodWidgetProvider.updateFriendMood(this@MainActivity, friendEmoji, friendLabel, timestamp)
 
-                    // The animation reflects the partner's actual mood, not their
-                    // live presence. It only stops for an explicit Disconnect tap,
-                    // or before they've ever joined the room — never for simply
-                    // being backgrounded or offline.
                     val partnerExplicitlyDisconnected =
                         friendEmoji == FirebaseSyncManager.DISCONNECT_EMOJI &&
                             friendLabel == FirebaseSyncManager.DISCONNECT_LABEL
@@ -929,13 +457,6 @@ class MainActivity : AppCompatActivity() {
                             maybePromptAddWidget()
                         }
                     } else {
-                        // Still joined to the Pairing ID. Never collapse to the
-                        // single-card layout merely because the partner's socket
-                        // is offline — and never stop the marquee/bubbles here
-                        // either. Those are driven solely by the partner's mood
-                        // content (see onFriendMoodChanged above), so a
-                        // backgrounded/offline partner keeps animating their
-                        // last-known mood until they explicitly disconnect.
                         isPartnerConnected = false
                         binding.cardConnectionBadge.visibility = View.GONE
                         ensureJoinedMoodLayout()
@@ -957,11 +478,6 @@ class MainActivity : AppCompatActivity() {
         binding.tvFriendLastUpdated.text = ""
     }
 
-    /**
-     * Shown once, right after the first successful manual pairing. Offers
-     * both widget sizes — full 2x2 or the app-icon-sized compact one — and
-     * lets the user pick, or add neither.
-     */
     private fun maybePromptAddWidget() {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (prefs.getBoolean(KEY_WIDGET_PROMPT_SHOWN, false)) return
@@ -1180,7 +696,6 @@ class MainActivity : AppCompatActivity() {
         FirebaseSyncManager.disconnect()
     }
 
-    // --- Mood-card states --------------------------------------------------------
     private val myMoodColumn: ViewGroup
         get() = binding.cardLivePreviewContainer.parent as ViewGroup
 
@@ -1222,8 +737,6 @@ class MainActivity : AppCompatActivity() {
         binding.tvFriendStatus.setAccentColors(accentColors)
     }
 
-    /** Two equal tiles are retained for the entire time this device is joined
-     * to a Pairing ID, regardless of whether the partner is currently online. */
     private fun ensureJoinedMoodLayout() {
         if (!::binding.isInitialized || !isRoomJoined) return
         val mine = myMoodColumn
@@ -1266,9 +779,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateToPairedMood() {
-        // Kept for compatibility with existing callers; the joined-state layout
-        // is deliberately stable so theme changes/partner disconnects cannot
-        // collapse the partner tile.
         showJoinedMoodLayoutWithoutAnimation()
         if (isPartnerMoodActive) startLabelMarquee()
     }
@@ -1284,12 +794,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun Int.dp(): Int = (this * resources.displayMetrics.density).toInt()
 
-    // --- Floating emoji bubbles -------------------------------------------------
-    // Starts once pairing succeeds and the pairing card disappears, using the
-    // reserved box at the bottom of the screen. Bubbles drift in from a random
-    // edge, wander to a few random spots inside the box, then drift back out
-    // through a random edge. Capped at MAX_FLOATING_BUBBLES on screen at once.
-
     private fun startFloatingBubbles() {
         binding.floatingBubbleContainer.visibility = View.VISIBLE
         if (bubblesRunning) return
@@ -1297,13 +801,11 @@ class MainActivity : AppCompatActivity() {
         bubbleHandler.post(bubbleSpawnRunnable)
     }
 
-    /** Pauses spawning (e.g. app backgrounded) without clearing existing bubbles. */
     private fun pauseFloatingBubbles() {
         bubblesRunning = false
         bubbleHandler.removeCallbacks(bubbleSpawnRunnable)
     }
 
-    /** Fully stops and clears bubbles (e.g. user disconnected). */
     private fun stopFloatingBubbles() {
         bubblesRunning = false
         bubbleHandler.removeCallbacksAndMessages(null)
@@ -1318,7 +820,7 @@ class MainActivity : AppCompatActivity() {
         val container = binding.floatingBubbleContainer
         val containerWidth = container.width
         val containerHeight = container.height
-        if (containerWidth == 0 || containerHeight == 0) return // not laid out yet, try next tick
+        if (containerWidth == 0 || containerHeight == 0) return
 
         val bubbleSizePx = (36 * resources.displayMetrics.density).toInt()
 
@@ -1335,14 +837,11 @@ class MainActivity : AppCompatActivity() {
         container.addView(bubble, params)
         activeBubbles.add(bubble)
 
-        // Usable travel range inside the box, so the emoji never gets clipped at an edge.
         val maxX = (containerWidth - bubbleSizePx).coerceAtLeast(0)
         val maxY = (containerHeight - bubbleSizePx).coerceAtLeast(0)
         fun randomX() = Random.nextInt(0, maxX + 1).toFloat()
         fun randomY() = Random.nextInt(0, maxY + 1).toFloat()
 
-        // Enter from a random edge (left, right, top, or bottom) instead of always
-        // sliding straight across, so the motion never reads as a fixed lane.
         val enterEdge = Random.nextInt(4)
         val startX: Float
         val startY: Float
@@ -1355,12 +854,10 @@ class MainActivity : AppCompatActivity() {
         bubble.translationX = startX
         bubble.translationY = startY
 
-        // Slow drift settings: bigger duration = slower movement.
         val enterDurationMs = 2600L
         val exitDurationMs = 2600L
         fun randomWanderDurationMs() = Random.nextLong(2400L, 3601L)
 
-        /** Sends the bubble drifting back out through a random edge, then removes it. */
         fun driftOutAndRemove(fromX: Float, fromY: Float) {
             val exitEdge = Random.nextInt(4)
             val exitX: Float
@@ -1389,7 +886,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        /** Drifts the bubble to another random point inside the box, then repeats or exits. */
         fun wander(hopsLeft: Int, fromX: Float, fromY: Float) {
             if (hopsLeft <= 0) {
                 driftOutAndRemove(fromX, fromY)
@@ -1414,7 +910,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Drift in from the edge to a random resting spot, then start wandering.
         val firstX = randomX()
         val firstY = randomY()
         AnimatorSet().apply {
