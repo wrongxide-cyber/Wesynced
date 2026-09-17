@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WeSynced</string>
+    <string name="widget_name">WeSynced Widget</string>
+    <string name="app_tagline">by wrongxide</string>
+    <string name="pairing_title">Pair with your partner</string>
+    <string name="hint_pairing_id">Enter pairing ID</string>
+    <string name="btn_connect">Connect</string>
+    <string name="btn_generate_random">Generate Random ID</string>
+    <string name="btn_copy_id">Copy ID</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="my_current_mood">My Current Mood</string>
+    <string name="my_mood_label">My Mood</string>
+    <string name="partner_mood_label">Partner\'s Mood</string>
+    <string name="hint_tap_to_change">Tap to change</string>
+    <string name="partner_mood_title">Partner\'s Mood</string>
+    <string name="choose_mood_title">Choose a Mood</string>
+    <string name="error_enter_pairing_id">Please enter a pairing ID</string>
+    <string name="widget_description">Shows your partner\'s live mood</string>
+
+    <string name="drawer_open">Open navigation menu</string>
+    <string name="drawer_close">Close navigation menu</string>
+
+    <string name="menu_tips">Tips</string>
+    <string name="menu_tips_subtitle">Maximize your experience</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_settings_subtitle">Change the theme</string>
+    <string name="menu_about">About</string>
+    <string name="menu_about_subtitle">Learn about WeSynced</string>
+    <string name="menu_help">How It Works</string>
+    <string name="menu_help_subtitle">Learn how everything works</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_light">Colorful</string>
+    <string name="settings_theme_dark">Monochrome</string>
+    <string name="settings_sync_title">Sync Interval</string>
+    <string name="sync_interval_1">Every 1 minute</string>
+    <string name="sync_interval_5">Every 5 minutes</string>
+    <string name="sync_interval_10">Every 10 minutes</string>
+    <string name="sync_interval_15">Every 15 minutes</string>
+    <string name="sync_interval_30">Every 30 minutes</string>
+    <string name="settings_sync_note">Note: mood updates are currently sent live. This setting will control periodic sync timing in an upcoming update.</string>
+    <string name="settings_animated_emoji_title">Animated Emoji</string>
+    <string name="settings_animated_emoji_on">On</string>
+    <string name="settings_animated_emoji_off">Off</string>
+
+    <string name="about_title">About</string>
+    <string name="about_version_prefix">Version %1$s</string>
+    <string name="about_greeting">Made with 💜 by wrongxide</string>
+    <string name="about_paragraphs">WeSynced is all about keeping you close to your favorite person without any of the extra noise or pressure 🤍\n\nOne-Tap Emotion Sharing 📲: Just tap an emoji to share how you\'re feeling directly on your partner\'s home screen—no need to type out a full message.\n\nZero Pressure, Zero Stress 🍃: Forget read receipts or asking \"Are you free to talk?\" It\'s just a continuous, gentle connection between two people who care about each other.\n\nDesigned to be Calm 🎨: Soft pastel colors and smooth animations make the app feel like a warm hug rather than another notification fighting for your attention.\n\nComplements Your Chat 💬: It doesn\'t replace your actual conversations; it just sits quietly in the background holding a simple \"I\'m thinking of you\" until you\'re ready to catch up.\n\nThank you so much for trying out this very first version! 💌</string>
+    <string name="about_license_notice">Animated emoji by Google Noto Emoji, licensed under CC BY 4.0</string>
+
+    <string name="help_title">How It Works</string>
+    <string name="help_content"><b>Getting Started</b>\n\n<b>1. Tap \"Generate Random ID\" to create your own pairing code, or type in one your partner already shared with you.</b>\n<b>2. Tap \"Connect\" to start syncing.</b>\n<b>3. Once connected, tap any emoji below to update your mood — your partner sees it instantly.</b>\n\n<b>Staying Connected</b>\n\nYour mood stays visible to your partner even if you close the app. It only changes when you pick a new one, or tap \"Disconnect.\"\n\n<b>The Widget</b>\n\nAdd the WeSynced widget to your home screen to see your partner\'s mood at a glance, without ever opening the app.\n\n<b>Disconnecting</b>\n\nTapping \"Disconnect\" lets your partner know you\'ve intentionally stepped away — until then, your last mood stays exactly as you left it.\n\n<b>Reconnecting</b>\n\nJust enter the same pairing ID again anytime to pick up right where you left off.\n\n<b>Custom Moods</b>\n\nThe four blank slots at the bottom of your mood picker are yours to define — tap one to set your own emoji and name it whatever you like. Long-press any custom slot anytime to change it.</string>
+
+    <string name="tips_title">Tips</string>
+    <string name="tips_content"><b>A Couple of Small Steps, A Big Difference 💡</b>\n\nWeSynced relies on your phone quietly waking it up in the background so your partner\'s mood reaches you the moment they update it — even with the app fully closed. Most phones are designed to aggressively limit exactly that kind of background activity to save power, which is great for random apps you barely open, but it works against an app like this one whose entire purpose is staying quietly connected in the background. These two steps tell your phone to make an exception for WeSynced.\n\n<b>1. Turn Off Battery Optimization</b>\n\nBy default, Android periodically freezes apps sitting in the background to save power. If WeSynced gets frozen, it can miss the tiny background \"ping\" that tells it your partner\'s mood changed — so you might open the app and find it out of date. Turning off battery optimization tells your phone to let WeSynced keep listening, and it barely costs any extra battery in return, since each update is instant and tiny.\n\n<b>2. Lock WeSynced in Recent Apps</b>\n\nOn a lot of phones, swiping an app away from your Recent Apps screen doesn\'t just close it — it fully kills it and blocks it from waking back up in the background, even if battery optimization is already turned off. Locking WeSynced in your Recent Apps list (usually by long-pressing its card and tapping a lock icon) tells your phone not to do that, so it keeps quietly listening even after you\'ve swiped through your other apps.\n\nTaking both steps together is what makes your partner\'s mood actually show up instantly on your home screen widget, without you needing to keep the app open. If you skipped either one during setup, you can always turn it on later — your connection just gets a little more reliable once you do. 💜</string>
+    <string name="tips_battery_button">Turn Off Battery Optimization</string>
+
+    <string name="onboarding_slide1_title">Keep the connection live and Instant. ⚡</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_slide2_title">Turn off battery optimization for WeSynced.</string>
+    <string name="onboarding_slide2_body">We promise it won\'t drain your phone. The background check finishes in milliseconds and consumes under 1% of your battery throughout the whole day. Just pure, quiet sync.</string>
+    <string name="onboarding_battery_button">Turn Off Battery Saver</string>
+    <string name="onboarding_skip">Skip for now</string>
+
+    <string name="onboarding_slide3_title">One last step 🔒</string>
+    <string name="onboarding_slide3_intro">On most phones, swiping WeSynced away from Recent Apps quietly kills it in the background. Locking it in place fixes that.</string>
+    <string name="onboarding_slide3_button">Got It, I\'m Ready</string>
+    <string name="onboarding_slide3_steps_xiaomi">1. Open Recent Apps\n2. Find WeSynced\n3. Tap and hold its card\n4. Tap the lock icon 🔒</string>
+    <string name="onboarding_slide3_steps_samsung">1. Open Recent Apps\n2. Find WeSynced\n3. Tap the small app icon at the top of its card\n4. Tap \"Lock this app\"</string>
+    <string name="onboarding_slide3_steps_coloros">1. Open Recent Apps\n2. Find WeSynced\n3. Tap and hold its card\n4. Tap the lock icon 🔒</string>
+    <string name="onboarding_slide3_steps_nokia">1. Open Settings → Battery\n2. Tap \"Battery protection\"\n3. Add WeSynced to the protected apps list</string>
+    <string name="onboarding_slide3_steps_stock">Your phone runs close to stock Android, so there\'s no extra lock step here — the battery permission you just granted is enough.</string>
+    <string name="onboarding_slide3_steps_default">1. Open Recent Apps\n2. Find WeSynced\n3. Tap and hold its card\n4. Look for a lock icon 🔒 or an option like \"Keep in background\"</string>
+
+    <string name="custom_mood_placeholder">➕</string>
+    <string name="custom_mood_fallback_label">New Mood</string>
+    <string name="custom_mood_tap_hold_hint">Long-press this slot to change it</string>
+    <string name="dialog_custom_mood_title">Set Your Own Mood</string>
+    <string name="dialog_emoji_hint">Emoji</string>
+    <string name="dialog_label_hint">Name (e.g. Gaming)</string>
+    <string name="dialog_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
+
+    <string name="widget_prompt_title">Add the WeSynced Widget?</string>
+    <string name="widget_prompt_message">Keep your partner\'s mood one glance away — right on your home screen. Pick whichever size fits your home screen best.</string>
+    <string name="widget_prompt_positive_full">Full Widget</string>
+    <string name="widget_prompt_positive_compact">Compact Widget</string>
+    <string name="widget_prompt_negative">Not Now</string>
+    <string name="widget_prompt_manual_fallback">Long-press your home screen, then find WeSynced in the widget list.</string>
+
+    <string name="qs_tile_label">WeSynced</string>
+    <string name="qs_tile_not_connected">Not paired</string>
+    <string name="widget_small_name">WeSynced (Small)</string>
+
+    <string name="updated_just_now">Updated just now</string>
+    <string name="updated_minutes_ago">Updated %1$d min ago</string>
+    <string name="updated_hours_ago">Updated %1$d hr ago</string>
+    <string name="updated_days_ago">Updated %1$d d ago</string>
+</resources>
