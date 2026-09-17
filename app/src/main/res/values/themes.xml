@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.WeSynced" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pastel_purple</item>
+        <item name="colorSurface">@color/card_surface</item>
+        <item name="android:colorBackground">@color/pastel_background</item>
+        <item name="android:fontFamily">@font/quicksand</item>
+        <item name="fontFamily">@font/quicksand</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
