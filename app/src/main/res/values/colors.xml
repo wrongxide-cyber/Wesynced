@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="pastel_background">#FAF3EA</color>
+    <color name="card_surface">#FFFFFF</color>
+
+    <color name="pastel_purple">#A79BCC</color>
+    <color name="pastel_purple_dark">#7864B8</color>
+
+    <color name="pastel_lavender_light">#F3EFFD</color>
+    <color name="pastel_lavender_soft">#EFE8FC</color>
+
+    <color name="pastel_peach_light">#FFF0EB</color>
+    <color name="pastel_peach_soft">#FFEBE5</color>
+
+    <color name="pastel_mint">#C8F2DD</color>
+    <color name="pastel_mint_soft">#E1FAEE</color>
+    <color name="mint_dark">#247C55</color>
+
+    <color name="pastel_butter_soft">#FFF7D9</color>
+    <color name="pastel_rose_soft">#FFE4E6</color>
+    <color name="pastel_brown_soft">#F5EBE6</color>
+
+    <color name="text_primary">#2D283E</color>
+    <color name="text_secondary">#7A7489</color>
+
+    <color name="switch_thumb">#7864B8</color>
+    <color name="switch_track">#D8D0EC</color>
+
+    <color name="pastel_red_soft">#FBD5D5</color>
+    <color name="red_dark">#B3261E</color>
+
+    <color name="tips_action_background">#A79BCC</color>
+    <color name="tips_action_text">#FFFFFF</color>
+
+</resources>
