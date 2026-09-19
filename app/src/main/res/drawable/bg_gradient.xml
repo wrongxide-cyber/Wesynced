@@ -1,9 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <gradient
-        android:angle="270"
-        android:startColor="#FFFDF9"
-        android:centerColor="#FCF6ED"
-        android:endColor="#F3ECFA" />
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base: deep purple, darkest at the top, richer/warmer toward the bottom -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#1B1030"
+                android:centerColor="#3C1F66"
+                android:endColor="#5C3086" />
+        </shape>
+    </item>
+
+    <!-- Cool periwinkle-blue glow, upper-right corner -->
+    <item
+        android:width="380dp"
+        android:height="380dp"
+        android:gravity="top|end">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="190dp"
+                android:startColor="#7B7EA8FF"
+                android:centerColor="#407EA8FF"
+                android:endColor="#007EA8FF" />
+        </shape>
+    </item>
+
+    <!-- Soft orchid-pink glow, center, adds a hint of extra colour mid-screen -->
+    <item
+        android:width="440dp"
+        android:height="440dp"
+        android:gravity="center">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="220dp"
+                android:startColor="#4DE091C9"
+                android:centerColor="#26E091C9"
+                android:endColor="#00E091C9" />
+        </shape>
+    </item>
+
+    <!-- Warm coral glow, low and wide across the bottom -->
+    <item
+        android:width="520dp"
+        android:height="300dp"
+        android:gravity="bottom">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="260dp"
+                android:startColor="#8CFF9466"
+                android:centerColor="#66FF9466"
+                android:endColor="#00FF9466" />
+        </shape>
+    </item>
+
+</layer-list>
