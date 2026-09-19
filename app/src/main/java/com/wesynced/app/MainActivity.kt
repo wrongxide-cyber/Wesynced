@@ -151,9 +151,14 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigationDrawer()
         setupUI()
-        loadSavedPreferences()
+        // IMPORTANT: custom mood slots must be loaded into moodCatalogue
+        // BEFORE loadSavedPreferences() runs, since that function immediately
+        // reads moodCatalogue to show the last-selected mood's label. Doing
+        // it in the other order was why a custom mode's name reverted to
+        // "New Mood" on cold start until you tapped another mode and back.
         setupEmojiClickListeners()
         setupCustomMoodSlots()
+        loadSavedPreferences()
         lastAppliedAnimatedEmojiSetting = AppSettings.getAnimatedEmojiEnabled(this)
     }
 
@@ -255,22 +260,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupNavigationDrawer() {
         val drawerSurfaceColor = ContextCompat.getColor(this, R.color.card_surface)
-        val mainSurfaceColor = ContextCompat.getColor(this, R.color.pastel_background)
+        val mainSurfaceColor = ContextCompat.getColor(this, R.color.home_status_bar_color)
+        val insetsController = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
 
         // The drawer occupies the whole left edge, but the status-bar strip is
         // owned by the Activity window. Match it to the drawer while the drawer
-        // is open so there is no visible colour break at the top.
+        // is open so there is no visible colour break at the top. The home
+        // background is dark, so status-bar icons need to flip to light while
+        // it's showing, and back to dark over the (light) drawer surface.
         binding.drawerLayout.addDrawerListener(object : androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener() {
             override fun onDrawerOpened(drawerView: View) {
                 window.statusBarColor = drawerSurfaceColor
+                insetsController.isAppearanceLightStatusBars = true
             }
 
             override fun onDrawerClosed(drawerView: View) {
                 window.statusBarColor = mainSurfaceColor
+                insetsController.isAppearanceLightStatusBars = false
             }
         })
 
         window.statusBarColor = mainSurfaceColor
+        insetsController.isAppearanceLightStatusBars = false
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { view, insets ->
             val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
