@@ -33,4 +33,12 @@
     <color name="tips_action_background">#A79BCC</color>
     <color name="tips_action_text">#FFFFFF</color>
 
+    <!-- Home screen only: text that sits directly on the new purple
+         gradient background (bg_gradient.xml), rather than on a card. -->
+    <color name="home_status_bar_color">#1B1030</color>
+    <color name="home_screen_title_text">#FBF3FF</color>
+    <color name="home_label_mine">#FFD9B8</color>
+    <color name="home_label_partner">#D8C7FF</color>
+    <color name="home_screen_subtitle_text">#C9BFE0</color>
+
 </resources>
