@@ -42,18 +42,15 @@
         </shape>
     </item>
 
-    <!-- Warm coral glow, low and wide across the bottom -->
-    <item
-        android:width="520dp"
-        android:height="300dp"
-        android:gravity="bottom">
-        <shape android:shape="oval">
+    <!-- Warm coral tint, blended broadly across the lower half so it reads as part of the
+         base gradient rather than a distinct circular glow -->
+    <item>
+        <shape android:shape="rectangle">
             <gradient
-                android:type="radial"
-                android:gradientRadius="260dp"
-                android:startColor="#8CFF9466"
-                android:centerColor="#66FF9466"
-                android:endColor="#00FF9466" />
+                android:angle="270"
+                android:startColor="#00FF9466"
+                android:centerColor="#1AFF9466"
+                android:endColor="#33FF9466" />
         </shape>
     </item>
 
