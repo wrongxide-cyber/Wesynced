@@ -46,7 +46,7 @@ class TwinklingMoodTextView @JvmOverloads constructor(
     private val staticPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
-        textSize = scaledDensity * 15f
+        textSize = scaledDensity * 12f
         color = Color.WHITE
     }
 
